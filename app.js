@@ -7,6 +7,7 @@ let allTasks = [];
 let allItems = [];
 let allHideoutStations = [];
 let allTraders = [];
+let allAmmo = [];
 
 let currentSection = "home";
 let hideCompletedItems = false;
@@ -15,6 +16,8 @@ let selectedTraderLevel = "all";
 let traderViewMode = "sales";
 let traderSearchValue = "";
 let pendingTraderSearch = "";
+let selectedAmmoPen = 0;
+let selectedAmmoCaliber = "all";
 
 let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 let completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || [];
@@ -1129,6 +1132,16 @@ searchInput.addEventListener("input", () => {
 
     displayItems(filteredItems);
   }
+
+  if (currentSection === "ammo") {
+  const filteredAmmo = allAmmo.filter(ammo =>
+    ammo.item?.name?.toLowerCase().includes(value) ||
+    ammo.item?.shortName?.toLowerCase().includes(value) ||
+    ammo.caliber?.toLowerCase().includes(value)
+  );
+
+  displayAmmo(filteredAmmo);
+}
 });
 
 function getUnlockedTasks(taskId) {
@@ -1364,6 +1377,171 @@ if ("serviceWorker" in navigator) {
     .catch(error => {
       console.log(error);
     });
+}
+
+async function showAmmo() {
+  currentSection = "ammo";
+  searchInput.style.display = "block";
+  searchInput.value = "";
+
+  content.innerHTML = "<p>Chargement des munitions...</p>";
+
+  const query = `
+{
+  ammo {
+    item {
+      id
+      name
+      shortName
+      iconLink
+    }
+    caliber
+    damage
+    penetrationPower
+  }
+}
+`;
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ query })
+    });
+
+    const result = await response.json();
+
+    if (result.errors) {
+      console.error(result.errors);
+      content.innerHTML = "<p>Erreur API munitions.</p>";
+      return;
+    }
+
+    allAmmo = result.data.ammo;
+    displayAmmo(allAmmo);
+
+  } catch (error) {
+    console.error(error);
+    content.innerHTML = "<p>Impossible de charger les munitions.</p>";
+  }
+}
+
+function getArmorClassInfo(pen) {
+  if (pen >= 50) {
+    return {
+      label: "Très efficace classe 5/6",
+      className: "armor-red"
+    };
+  }
+
+  if (pen >= 40) {
+    return {
+      label: "Efficace classe 4/5",
+      className: "armor-orange"
+    };
+  }
+
+  if (pen >= 30) {
+    return {
+      label: "Correct classe 3/4",
+      className: "armor-yellow"
+    };
+  }
+
+  return {
+    label: "Faible pénétration",
+    className: "armor-green"
+  };
+}
+
+function displayAmmo(ammoList) {
+  content.innerHTML = "<h2>Ammo / Ballistics</h2>";
+
+  const calibers = [
+  ...new Set(
+    allAmmo.map(ammo => ammo.caliber).filter(Boolean)
+  )
+].sort();
+
+  content.innerHTML += `
+
+  <div class="ammo-caliber-filter">
+
+    <select onchange="setAmmoCaliberFilter(this.value)">
+      <option value="all">Tous les calibres</option>
+
+      ${
+        calibers.map(caliber => `
+          <option
+            value="${caliber}"
+            ${
+              selectedAmmoCaliber === caliber
+                ? "selected"
+                : ""
+            }
+          >
+            ${caliber}
+          </option>
+        `).join("")
+      }
+
+    </select>
+
+  </div>
+
+  <div class="trader-filters">
+`;
+      
+  ammoList
+  .filter(ammo =>
+    ammo.penetrationPower >= selectedAmmoPen
+    )
+  .filter(ammo =>
+  selectedAmmoCaliber === "all" ||
+  ammo.caliber === selectedAmmoCaliber
+    )
+  .sort((a, b) => b.penetrationPower - a.penetrationPower)
+    .forEach(ammo => {
+      const armorInfo = getArmorClassInfo(ammo.penetrationPower || 0);
+      const card = document.createElement("div");
+      card.className = "card";
+
+      card.innerHTML = `
+        <div class="item-card">
+          ${ammo.item?.iconLink ? `<img src="${ammo.item.iconLink}" alt="${ammo.item.name}">` : ""}
+
+          <div>
+            <h3>${ammo.item?.name || "Munition inconnue"}</h3>
+            <p><strong>Calibre :</strong> ${ammo.caliber || "N/A"}</p>
+            <p><strong>Dégâts :</strong> ${ammo.damage || 0}</p>
+            <p><strong>Pénétration :</strong> ${ammo.penetrationPower || 0} (${armorInfo.label})</p>
+
+            <p>
+              <strong>Classe armure :</strong>
+              <span class="${armorInfo.className}">
+                ${armorInfo.label}
+              </span>
+            </p>
+          </div>
+        </div>
+      `;
+
+      content.appendChild(card);
+    });
+}
+
+function setAmmoPenFilter(value) {
+  selectedAmmoPen = value;
+  displayAmmo(allAmmo);
+}
+
+function setAmmoCaliberFilter(caliber) {
+
+  selectedAmmoCaliber = caliber;
+
+  displayAmmo(allAmmo);
 }
 
 /* =========================

@@ -558,3 +558,39 @@ button:focus-visible {
   width: 60px;
   flex-shrink: 0;
 }
+
+.armor-green,
+.armor-yellow,
+.armor-orange,
+.armor-red {
+  font-weight: bold;
+}
+
+.armor-green {
+  color: #7ac77a !important;
+}
+
+.armor-yellow {
+  color: #d6b56d !important;
+}
+
+.armor-orange {
+  color: #e08a3e !important;
+}
+
+.armor-red {
+  color: #ff5c5c !important;
+}
+
+.ammo-caliber-filter {
+  margin-bottom: 15px;
+}
+
+.ammo-caliber-filter select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  background: #1f1f1f;
+  color: white;
+  border: 1px solid #444;
+}
