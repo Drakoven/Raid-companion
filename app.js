@@ -826,6 +826,7 @@ function showHome() {
           <button onclick="showItems()">🎒 Objets</button>
           <button onclick="showMaps()">🗺 Maps</button>
           <button onclick="showHideout()">🏚 Hideout</button>
+          <button onclick="showTraders()">💰 Marchands</button>
           <button onclick="showFavorites()">⭐ Favoris</button>
         </div>
       </div>
