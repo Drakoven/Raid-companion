@@ -13,6 +13,8 @@ let hideCompletedItems = false;
 
 let selectedTraderLevel = "all";
 let traderViewMode = "sales";
+let traderSearchValue = "";
+let pendingTraderSearch = "";
 
 let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 let completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || [];
@@ -160,7 +162,9 @@ async function getQuests() {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ query })
     });
 
@@ -175,6 +179,7 @@ async function getQuests() {
     allTasks = result.data.tasks;
     saveToCache("cachedTasks", allTasks);
     displayQuests(allTasks);
+
   } catch (error) {
     console.error(error);
     content.innerHTML = "<p>Impossible de charger les quêtes.</p>";
@@ -195,6 +200,7 @@ function displayQuests(tasks) {
         ${task.name}
         ${task.kappaRequired ? '<span class="kappa-badge">🟣 Kappa</span>' : ""}
       </h3>
+
       <p>Marchand : ${task.trader?.name || "Inconnu"}</p>
     `;
 
@@ -206,18 +212,30 @@ function displayQuestDetails(task) {
   const unlockedTasks = getUnlockedTasks(task.id);
 
   content.innerHTML = `
-    <button class="back-btn" onclick="displayQuests(allTasks)">← Retour</button>
+    <button class="back-btn" onclick="displayQuests(allTasks)">
+      ← Retour
+    </button>
 
     <div class="quest-detail">
       <h2>${task.name}</h2>
 
-      ${task.kappaRequired ? '<div class="kappa-detail">🟣 Requise pour Kappa</div>' : ""}
+      ${
+        task.kappaRequired
+          ? '<div class="kappa-detail">🟣 Requise pour Kappa</div>'
+          : ""
+      }
 
-      <button class="favorite-btn" onclick='addFavorite("quête", { id: "${task.id}", name: "${task.name}" })'>
+      <button
+        class="favorite-btn"
+        onclick='addFavorite("quête", { id: "${task.id}", name: "${task.name}" })'
+      >
         ${isFavorite(task.id) ? "⭐ Retirer des favoris" : "☆ Ajouter aux favoris"}
       </button>
 
-      <button class="complete-btn" onclick='toggleTaskComplete("${task.id}")'>
+      <button
+        class="complete-btn"
+        onclick='toggleTaskComplete("${task.id}")'
+      >
         ${isTaskComplete(task.id) ? "✔ Quête terminée" : "❌ Marquer comme terminée"}
       </button>
 
@@ -229,24 +247,36 @@ function displayQuestDetails(task) {
       </div>
 
       <div class="detail-box">
-        <button class="section-toggle" onclick="toggleSection('objectives-section')">▼ Objectifs</button>
+        <button class="section-toggle" onclick="toggleSection('objectives-section')">
+          ▼ Objectifs
+        </button>
+
         <div id="objectives-section">
           ${
             task.objectives?.length > 0
-              ? task.objectives.map(obj => `<div class="objective">${obj.description}</div>`).join("")
+              ? task.objectives.map(obj => `
+                  <div class="objective">${obj.description}</div>
+                `).join("")
               : "<p>Aucun objectif trouvé.</p>"
           }
         </div>
       </div>
 
       <div class="detail-box">
-        <button class="section-toggle" onclick="toggleSection('rewards-section')">▼ Récompenses</button>
+        <button class="section-toggle" onclick="toggleSection('rewards-section')">
+          ▼ Récompenses
+        </button>
+
         <div id="rewards-section">
           ${
             task.finishRewards?.items?.length > 0
               ? task.finishRewards.items.map(reward => `
                   <div class="reward">
-                    ${reward.item.iconLink ? `<img src="${reward.item.iconLink}" alt="${reward.item.name}">` : ""}
+                    ${
+                      reward.item.iconLink
+                        ? `<img src="${reward.item.iconLink}" alt="${reward.item.name}">`
+                        : ""
+                    }
                     <span>${reward.count} x ${reward.item.name}</span>
                   </div>
                 `).join("")
@@ -256,25 +286,39 @@ function displayQuestDetails(task) {
       </div>
 
       <div class="detail-box">
-        <button class="section-toggle" onclick="toggleSection('requirements-section')">▼ Quêtes précédentes</button>
+        <button class="section-toggle" onclick="toggleSection('requirements-section')">
+          ▼ Quêtes précédentes
+        </button>
+
         <div id="requirements-section">
           ${
             task.taskRequirements?.length > 0
-              ? task.taskRequirements.map(req => `<div class="objective">${req.task?.name || "Quête inconnue"}</div>`).join("")
+              ? task.taskRequirements.map(req => `
+                  <div class="objective">
+                    ${req.task?.name || "Quête inconnue"}
+                  </div>
+                `).join("")
               : "<p>Aucune quête précédente requise.</p>"
           }
         </div>
       </div>
 
       <div class="detail-box">
-        <button class="section-toggle" onclick="toggleSection('unlocked-section')">▼ Quêtes débloquées</button>
+        <button class="section-toggle" onclick="toggleSection('unlocked-section')">
+          ▼ Quêtes débloquées
+        </button>
+
         <div id="unlocked-section">
           ${
             unlockedTasks.length > 0
               ? unlockedTasks.map(unlocked => `
                   <div class="objective">
                     ${unlocked.name}
-                    ${unlocked.kappaRequired ? '<span class="kappa-badge">🟣 Kappa</span>' : ""}
+                    ${
+                      unlocked.kappaRequired
+                        ? '<span class="kappa-badge">🟣 Kappa</span>'
+                        : ""
+                    }
                   </div>
                 `).join("")
               : "<p>Aucune quête débloquée trouvée.</p>"
@@ -324,7 +368,9 @@ async function showItems() {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ query })
     });
 
@@ -339,6 +385,7 @@ async function showItems() {
     allItems = result.data.items;
     saveToCache("cachedItems", allItems);
     displayItems(allItems);
+
   } catch (error) {
     console.error(error);
     content.innerHTML = "<p>Erreur chargement objets.</p>";
@@ -356,6 +403,7 @@ function displayItems(items) {
     card.innerHTML = `
       <div class="item-card">
         <img src="${item.iconLink}" alt="${item.name}">
+
         <div>
           <h3>${item.name}</h3>
           <p>${item.category?.name || "Inconnu"}</p>
@@ -370,17 +418,23 @@ function displayItems(items) {
 
 function displayItemDetails(item) {
   content.innerHTML = `
-    <button class="back-btn" onclick="displayItems(allItems)">← Retour</button>
+    <button class="back-btn" onclick="displayItems(allItems)">
+      ← Retour
+    </button>
 
     <div class="quest-detail">
       <h2>${item.name}</h2>
 
-      <button class="favorite-btn" onclick='addFavorite("objet", { id: "${item.id}", name: "${item.name}" })'>
+      <button
+        class="favorite-btn"
+        onclick='addFavorite("objet", { id: "${item.id}", name: "${item.name}" })'
+      >
         ${isFavorite(item.id) ? "⭐ Retirer des favoris" : "☆ Ajouter aux favoris"}
       </button>
 
       <div class="detail-box item-detail-header">
         <img src="${item.imageLink || item.iconLink}" alt="${item.name}">
+
         <div>
           <p><strong>Nom court :</strong> ${item.shortName || "N/A"}</p>
           <p><strong>Catégorie :</strong> ${item.category?.name || "Inconnu"}</p>
@@ -422,6 +476,7 @@ function showMaps() {
       <div class="map-preview">
         <img src="${map.image}" alt="${map.name}">
       </div>
+
       <h3>${map.name}</h3>
       <p><strong>Difficulté :</strong> ${map.difficulty}</p>
       <p><strong>Boss :</strong> ${map.boss}</p>
@@ -436,7 +491,9 @@ function openMap(map) {
   searchInput.style.display = "none";
 
   content.innerHTML = `
-    <button class="back-btn" onclick="showMaps()">← Retour</button>
+    <button class="back-btn" onclick="showMaps()">
+      ← Retour
+    </button>
 
     <div class="quest-detail">
       <h2>${map.name}</h2>
@@ -449,7 +506,11 @@ function openMap(map) {
 
       <div class="detail-box">
         <h3>Extracts principales</h3>
-        ${map.extracts.map(extract => `<div class="objective">${extract}</div>`).join("")}
+        ${
+          map.extracts.map(extract => `
+            <div class="objective">${extract}</div>
+          `).join("")
+        }
       </div>
     </div>
   `;
@@ -489,7 +550,9 @@ async function showHideout() {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ query })
     });
 
@@ -503,6 +566,7 @@ async function showHideout() {
 
     allHideoutStations = result.data.hideoutStations;
     displayHideoutStations(allHideoutStations);
+
   } catch (error) {
     console.error(error);
     content.innerHTML = "<p>Impossible de charger le hideout.</p>";
@@ -524,9 +588,16 @@ function getHideoutStationProgress(station) {
     });
   });
 
-  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+  const percent =
+    total > 0
+      ? Math.round((completed / total) * 100)
+      : 0;
 
-  return { completed, total, percent };
+  return {
+    completed,
+    total,
+    percent
+  };
 }
 
 function displayHideoutStations(stations) {
@@ -557,7 +628,9 @@ function displayHideoutStations(stations) {
 
 function displayHideoutDetails(station) {
   content.innerHTML = `
-    <button class="back-btn" onclick="displayHideoutStations(allHideoutStations)">← Retour</button>
+    <button class="back-btn" onclick="displayHideoutStations(allHideoutStations)">
+      ← Retour
+    </button>
 
     <div class="quest-detail">
       <h2>${station.name}</h2>
@@ -566,7 +639,11 @@ function displayHideoutDetails(station) {
         class="favorite-btn"
         onclick='hideCompletedItems = !hideCompletedItems; displayHideoutDetails(allHideoutStations.find(s => s.id === "${station.id}"))'
       >
-        ${hideCompletedItems ? "👁 Afficher tous les objets" : "🎯 Afficher uniquement les objets manquants"}
+        ${
+          hideCompletedItems
+            ? "👁 Afficher tous les objets"
+            : "🎯 Afficher uniquement les objets manquants"
+        }
       </button>
 
       ${
@@ -590,7 +667,11 @@ function displayHideoutDetails(station) {
 
                       return `
                         <div class="reward hideout-requirement">
-                          ${req.item.iconLink ? `<img src="${req.item.iconLink}" alt="${req.item.name}">` : ""}
+                          ${
+                            req.item.iconLink
+                              ? `<img src="${req.item.iconLink}" alt="${req.item.name}">`
+                              : ""
+                          }
 
                           <div class="hideout-progress">
                             <span class="hideout-item-name">${req.item.name}</span>
@@ -692,7 +773,9 @@ async function showTraders() {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ query })
     });
 
@@ -706,6 +789,7 @@ async function showTraders() {
 
     allTraders = result.data.traders;
     displayTraders(allTraders);
+
   } catch (error) {
     console.error(error);
     content.innerHTML = "<p>Impossible de charger les marchands.</p>";
@@ -722,7 +806,12 @@ function displayTraders(traders) {
 
     card.innerHTML = `
       <div class="item-card">
-        ${trader.imageLink ? `<img src="${trader.imageLink}" alt="${trader.name}">` : ""}
+        ${
+          trader.imageLink
+            ? `<img src="${trader.imageLink}" alt="${trader.name}">`
+            : ""
+        }
+
         <div>
           <h3>${trader.name}</h3>
           <p>Voir les objets et échanges</p>
@@ -786,7 +875,9 @@ async function displayTraderDetails(trader) {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ query })
     });
 
@@ -807,12 +898,15 @@ async function displayTraderDetails(trader) {
 
     selectedTraderLevel = "all";
     traderViewMode = "sales";
+    traderSearchValue = "";
+    pendingTraderSearch = "";
 
     allTraders = allTraders.map(t =>
       t.id === fullTrader.id ? fullTrader : t
     );
 
     displayTraderOffers(fullTrader);
+
   } catch (error) {
     console.error(error);
     content.innerHTML = "<p>Impossible de charger les offres.</p>";
@@ -820,15 +914,33 @@ async function displayTraderDetails(trader) {
 }
 
 function displayTraderOffers(trader) {
-  const filteredOffers =
-    selectedTraderLevel === "all"
-      ? trader.cashOffers
-      : trader.cashOffers.filter(offer => offer.minTraderLevel === selectedTraderLevel);
+  const search = traderSearchValue.toLowerCase();
 
-  const filteredBarters =
-    selectedTraderLevel === "all"
-      ? trader.barters
-      : trader.barters.filter(barter => barter.level === selectedTraderLevel);
+  const filteredOffers = trader.cashOffers
+    .filter(offer =>
+      selectedTraderLevel === "all" ||
+      offer.minTraderLevel === selectedTraderLevel
+    )
+    .filter(offer =>
+      offer.item?.name?.toLowerCase().includes(search)
+    );
+
+  const filteredBarters = trader.barters
+    .filter(barter =>
+      selectedTraderLevel === "all" ||
+      barter.level === selectedTraderLevel
+    )
+    .filter(barter => {
+      const rewardMatch = barter.rewardItems?.some(reward =>
+        reward.item?.name?.toLowerCase().includes(search)
+      );
+
+      const requiredMatch = barter.requiredItems?.some(required =>
+        required.item?.name?.toLowerCase().includes(search)
+      );
+
+      return rewardMatch || requiredMatch;
+    });
 
   content.innerHTML = `
     <button class="back-btn" onclick="displayTraders(allTraders)">
@@ -837,6 +949,20 @@ function displayTraderOffers(trader) {
 
     <div class="quest-detail">
       <h2>${trader.name}</h2>
+
+      <div class="trader-search-box">
+        <input
+          type="text"
+          class="trader-search"
+          placeholder="Rechercher un objet marchand..."
+          value="${pendingTraderSearch}"
+          oninput='pendingTraderSearch = this.value'
+        />
+
+        <button onclick='applyTraderSearch("${trader.id}")'>
+          🔍 Recherche
+        </button>
+      </div>
 
       <div class="trader-tabs">
         <button onclick='setTraderViewMode("sales", "${trader.id}")'>
@@ -866,7 +992,11 @@ function displayTraderOffers(trader) {
                 filteredOffers?.length > 0
                   ? filteredOffers.slice(0, 100).map(offer => `
                       <div class="reward">
-                        ${offer.item?.iconLink ? `<img src="${offer.item.iconLink}" alt="${offer.item.name}">` : ""}
+                        ${
+                          offer.item?.iconLink
+                            ? `<img src="${offer.item.iconLink}" alt="${offer.item.name}">`
+                            : ""
+                        }
 
                         <span>
                           ${offer.item?.name || "Objet inconnu"}
@@ -893,15 +1023,21 @@ function displayTraderOffers(trader) {
                 filteredBarters?.length > 0
                   ? filteredBarters.slice(0, 100).map(barter => `
                       <div class="barter-card">
-
                         <div class="barter-reward">
                           <strong>Reçoit :</strong>
 
                           ${
                             barter.rewardItems?.map(reward => `
                               <div class="reward">
-                                ${reward.item?.iconLink ? `<img src="${reward.item.iconLink}" alt="${reward.item.name}">` : ""}
-                                <span>${reward.count} x ${reward.item?.name || "Objet inconnu"}</span>
+                                ${
+                                  reward.item?.iconLink
+                                    ? `<img src="${reward.item.iconLink}" alt="${reward.item.name}">`
+                                    : ""
+                                }
+
+                                <span>
+                                  ${reward.count} x ${reward.item?.name || "Objet inconnu"}
+                                </span>
                               </div>
                             `).join("")
                           }
@@ -913,8 +1049,15 @@ function displayTraderOffers(trader) {
                           ${
                             barter.requiredItems?.map(required => `
                               <div class="reward">
-                                ${required.item?.iconLink ? `<img src="${required.item.iconLink}" alt="${required.item.name}">` : ""}
-                                <span>${required.count} x ${required.item?.name || "Objet inconnu"}</span>
+                                ${
+                                  required.item?.iconLink
+                                    ? `<img src="${required.item.iconLink}" alt="${required.item.name}">`
+                                    : ""
+                                }
+
+                                <span>
+                                  ${required.count} x ${required.item?.name || "Objet inconnu"}
+                                </span>
                               </div>
                             `).join("")
                           }
@@ -953,6 +1096,16 @@ function setTraderLevelFilter(level, traderId) {
   }
 }
 
+function applyTraderSearch(traderId) {
+  traderSearchValue = pendingTraderSearch;
+
+  const trader = allTraders.find(trader => trader.id === traderId);
+
+  if (trader) {
+    displayTraderOffers(trader);
+  }
+}
+
 /* =========================
    RECHERCHE ET OUTILS
 ========================= */
@@ -961,29 +1114,43 @@ searchInput.addEventListener("input", () => {
   const value = searchInput.value.toLowerCase();
 
   if (currentSection === "quests") {
-    displayQuests(allTasks.filter(task => task.name.toLowerCase().includes(value)));
+    const filteredTasks = allTasks.filter(task =>
+      task.name.toLowerCase().includes(value)
+    );
+
+    displayQuests(filteredTasks);
   }
 
   if (currentSection === "items") {
-    displayItems(
-      allItems.filter(item =>
-        item.name.toLowerCase().includes(value) ||
-        item.shortName?.toLowerCase().includes(value)
-      )
+    const filteredItems = allItems.filter(item =>
+      item.name.toLowerCase().includes(value) ||
+      item.shortName?.toLowerCase().includes(value)
     );
+
+    displayItems(filteredItems);
   }
 });
 
 function getUnlockedTasks(taskId) {
   return allTasks.filter(otherTask =>
-    otherTask.taskRequirements?.some(req => req.task?.id === taskId)
+    otherTask.taskRequirements?.some(req =>
+      req.task?.id === taskId
+    )
   );
 }
 
 function toggleSection(id) {
   const section = document.getElementById(id);
-  section.style.display = section.style.display === "none" ? "block" : "none";
+
+  section.style.display =
+    section.style.display === "none"
+      ? "block"
+      : "none";
 }
+
+/* =========================
+   FAVORIS
+========================= */
 
 function addFavorite(type, data) {
   const exists = favorites.find(fav => fav.id === data.id);
@@ -991,7 +1158,10 @@ function addFavorite(type, data) {
   if (exists) {
     favorites = favorites.filter(fav => fav.id !== data.id);
   } else {
-    favorites.push({ type, ...data });
+    favorites.push({
+      type,
+      ...data
+    });
   }
 
   localStorage.setItem("favorites", JSON.stringify(favorites));
@@ -1009,8 +1179,13 @@ function showFavorites() {
   const cachedTasks = loadFromCache("cachedTasks");
   const cachedItems = loadFromCache("cachedItems");
 
-  if (cachedTasks) allTasks = cachedTasks;
-  if (cachedItems) allItems = cachedItems;
+  if (cachedTasks) {
+    allTasks = cachedTasks;
+  }
+
+  if (cachedItems) {
+    allItems = cachedItems;
+  }
 
   content.innerHTML = "<h2>Favoris</h2>";
 
@@ -1036,14 +1211,24 @@ function showFavorites() {
 function openFavorite(fav) {
   if (fav.type === "quête") {
     const task = allTasks.find(task => task.id === fav.id);
-    task ? displayQuestDetails(task) : alert("Charge d'abord les quêtes.");
+
+    task
+      ? displayQuestDetails(task)
+      : alert("Charge d'abord les quêtes.");
   }
 
   if (fav.type === "objet") {
     const item = allItems.find(item => item.id === fav.id);
-    item ? displayItemDetails(item) : alert("Charge d'abord les objets.");
+
+    item
+      ? displayItemDetails(item)
+      : alert("Charge d'abord les objets.");
   }
 }
+
+/* =========================
+   PROGRESSION KAPPA
+========================= */
 
 function toggleTaskComplete(taskId) {
   if (completedTasks.includes(taskId)) {
@@ -1061,14 +1246,18 @@ function isTaskComplete(taskId) {
 
 function getKappaProgress() {
   const kappaTasks = allTasks.filter(task => task.kappaRequired);
-  const completedKappaTasks = kappaTasks.filter(task => completedTasks.includes(task.id));
+
+  const completedKappaTasks = kappaTasks.filter(task =>
+    completedTasks.includes(task.id)
+  );
 
   return {
     completed: completedKappaTasks.length,
     total: kappaTasks.length,
-    percent: kappaTasks.length > 0
-      ? Math.round((completedKappaTasks.length / kappaTasks.length) * 100)
-      : 0
+    percent:
+      kappaTasks.length > 0
+        ? Math.round((completedKappaTasks.length / kappaTasks.length) * 100)
+        : 0
   };
 }
 
@@ -1091,7 +1280,11 @@ function showKappaTasks() {
     card.onclick = () => displayQuestDetails(task);
 
     card.innerHTML = `
-      <h3>${completedTasks.includes(task.id) ? "✔ " : ""}${task.name}</h3>
+      <h3>
+        ${completedTasks.includes(task.id) ? "✔ " : ""}
+        ${task.name}
+      </h3>
+
       <p>${task.trader?.name || "Inconnu"}</p>
     `;
 
@@ -1125,13 +1318,24 @@ function showHome() {
 
         <div class="kappa-progress" onclick="showKappaTasks()">
           <h3>🟣 Progression Kappa</h3>
-          <p>${getKappaProgress().completed} / ${getKappaProgress().total} quêtes</p>
+
+          <p>
+            ${getKappaProgress().completed}
+            /
+            ${getKappaProgress().total}
+            quêtes
+          </p>
 
           <div class="progress-bar">
-            <div class="progress-fill" style="width: ${getKappaProgress().percent}%;"></div>
+            <div
+              class="progress-fill"
+              style="width: ${getKappaProgress().percent}%;"
+            ></div>
           </div>
 
-          <span>${getKappaProgress().percent}%</span>
+          <span>
+            ${getKappaProgress().percent}%
+          </span>
         </div>
 
         <div class="home-buttons">
@@ -1147,10 +1351,23 @@ function showHome() {
   `;
 }
 
+/* =========================
+   SERVICE WORKER
+========================= */
+
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js")
-    .then(() => console.log("Service Worker enregistré"))
-    .catch(error => console.log(error));
+  navigator.serviceWorker
+    .register("service-worker.js")
+    .then(() => {
+      console.log("Service Worker enregistré");
+    })
+    .catch(error => {
+      console.log(error);
+    });
 }
+
+/* =========================
+   DÉMARRAGE
+========================= */
 
 showHome();

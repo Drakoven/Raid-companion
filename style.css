@@ -543,3 +543,18 @@ button:focus-visible {
     font-size: 12px;
   }
 }
+
+.trader-search {
+  margin-bottom: 15px;
+}
+
+.trader-search-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.trader-search-box button {
+  width: 60px;
+  flex-shrink: 0;
+}
