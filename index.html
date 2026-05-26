@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WikiTarkov Mobile</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <meta name="theme-color" content="#d6b56d" />
+</head>
+<body>
+
+  <header>
+    <h1>WikiTarkov</h1>
+    <p>Companion app Escape from Tarkov</p>
+  </header>
+
+  <main>
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Rechercher une quête, objet..."
+    />
+
+    <section id="content"></section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button onclick="showHome()">Accueil</button>
+    <button onclick="getQuests()">Quêtes</button>
+    <button onclick="showItems()">Objets</button>
+    <button onclick="showMaps()">Maps</button>
+    <button onclick="showHideout()">Hideout</button>
+    <button onclick="showFavorites()">Favoris</button>
+  </nav>
+
+  <script src="app.js"></script>
+  
+</body>
+</html>
