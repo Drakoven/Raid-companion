@@ -862,6 +862,12 @@ async function showHideout(push = true) {
   searchInput.style.display = "none";
   searchInput.value = "";
 
+  // Si déjà chargé en mémoire, on réutilise
+  if (allHideoutStations.length > 0) {
+    displayHideoutStations(allHideoutStations);
+    return;
+  }
+
   content.innerHTML = "<p>Chargement du hideout...</p>";
 
   const query = `
@@ -1072,6 +1078,12 @@ async function showTraders(push = true) {
   searchInput.style.display = "none";
   searchInput.value = "";
 
+  // Si les traders sont déjà en mémoire, pas besoin de recharger
+  if (allTraders.length > 0) {
+    displayTraders(allTraders);
+    return;
+  }
+
   content.innerHTML = "<p>Chargement des marchands...</p>";
 
   const query = `
@@ -1139,6 +1151,17 @@ async function displayTraderDetails(trader) {
     </button>
     <p>Chargement des offres de ${escapeHTML(trader.name)}...</p>
   `;
+
+  // Si ce trader a déjà ses offres chargées, on réutilise directement
+  const cached = allTraders.find(t => t.id === trader.id && t.cashOffers);
+  if (cached) {
+    selectedTraderLevel = "all";
+    traderViewMode = "sales";
+    traderSearchValue = "";
+    pendingTraderSearch = "";
+    displayTraderOffers(cached);
+    return;
+  }
 
   // On charge tous les traders avec leurs offres complètes,
   // puis on filtre côté client sur l'ID voulu.
@@ -1631,28 +1654,60 @@ function getKappaProgress() {
 
 function showKappaTasks() {
   currentSection = "kappa";
+  setActiveNav("quests");
+  pushHistory("quests");
   searchInput.style.display = "none";
 
   const kappaTasks = allTasks.filter(task => task.kappaRequired);
+  const total = kappaTasks.length;
+  const done = kappaTasks.filter(t => completedTasks.includes(t.id)).length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
 
+  // Non terminées en premier, terminées en bas
   const sortedTasks = [
-    ...kappaTasks.filter(task => completedTasks.includes(task.id)),
-    ...kappaTasks.filter(task => !completedTasks.includes(task.id))
+    ...kappaTasks.filter(task => !completedTasks.includes(task.id)),
+    ...kappaTasks.filter(task => completedTasks.includes(task.id))
   ];
 
-  content.innerHTML = "<h2>🟣 Quêtes Kappa</h2>";
+  content.innerHTML = `
+    <button class="back-btn" onclick="displayQuests(allTasks)">← Retour</button>
+    <h2>🟣 Quêtes Kappa</h2>
+    <div class="detail-box" style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-weight:700;color:var(--accent)">${done} / ${total} quêtes</span>
+        <span style="font-weight:700;color:var(--accent)">${pct}%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${pct}%"></div>
+      </div>
+    </div>
+  `;
 
   sortedTasks.forEach(task => {
     const card = document.createElement("div");
     card.className = "card";
+    if (completedTasks.includes(task.id)) card.classList.add("quest-complete");
     card.onclick = () => displayQuestDetails(task);
+
+    const objProgress = getQuestObjectiveProgress(task);
 
     card.innerHTML = `
       <h3>
         ${completedTasks.includes(task.id) ? "✔ " : ""}
         ${escapeHTML(task.name)}
       </h3>
-      <p>${escapeHTML(task.trader?.name) || "Inconnu"}</p>
+      <p>
+        ${escapeHTML(task.trader?.name) || "Inconnu"}
+        ${task.map?.name ? `· ${escapeHTML(task.map.name)}` : ""}
+      </p>
+      ${objProgress && !completedTasks.includes(task.id) ? `
+        <div class="card-obj-progress">
+          <div class="card-obj-bar">
+            <div class="progress-fill" style="width:${objProgress.pct}%"></div>
+          </div>
+          <span class="card-obj-label">${objProgress.done}/${objProgress.total}</span>
+        </div>
+      ` : ""}
     `;
 
     content.appendChild(card);
@@ -1675,8 +1730,6 @@ function showHome(push = true) {
 
   const cachedItems = loadFromCache("cachedItems");
   if (cachedItems) allItems = cachedItems;
-
-  const cachedHideout = allHideoutStations;
 
   const kappa = getKappaProgress();
 

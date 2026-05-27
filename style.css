@@ -1387,12 +1387,75 @@ button:focus-visible {
     padding-inline: 14px;
   }
 
-  .home-overlay h1 {
-    font-size: 34px;
-  }
-
   .bottom-nav button {
     font-size: 11px;
     min-width: 64px;
+  }
+
+  /* Dashboard */
+  .dashboard-hero-text h1 {
+    font-size: 22px;
+  }
+
+  .dashboard-quick-grid,
+  .dashboard-hideout-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .dashboard-quick-btn {
+    font-size: 20px;
+    padding: 12px 8px;
+  }
+
+  /* Comparaison ammo */
+  .compare-table.cols-2 {
+    grid-template-columns: 72px 1fr 1fr;
+  }
+
+  .compare-table.cols-3 {
+    grid-template-columns: 60px 1fr 1fr 1fr;
+  }
+
+  .compare-label-cell {
+    font-size: 10px;
+    padding: 8px 4px;
+  }
+
+  .compare-value-cell {
+    font-size: 11px;
+    padding: 6px 3px;
+  }
+
+  .compare-ammo-header img {
+    width: 26px;
+    height: 26px;
+  }
+
+  .compare-ammo-header span {
+    font-size: 10px;
+  }
+
+  /* Stats ammo */
+  .ammo-stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stat-label {
+    flex: 0 0 76px;
+    font-size: 12px;
+  }
+
+  /* Filtres quêtes */
+  .quest-filter-row label {
+    flex: 0 0 56px;
+    font-size: 12px;
+  }
+
+  /* Objectifs */
+  .obj-checkbox {
+    flex: 0 0 20px;
+    height: 20px;
+    font-size: 11px;
   }
 }
