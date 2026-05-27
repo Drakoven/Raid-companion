@@ -43,7 +43,8 @@ const mapsData = [
     difficulty: "Débutant / Intermédiaire",
     boss: "Reshala",
     use: "Très utilisée pour les quêtes early wipe.",
-    extracts: ["Crossroads", "ZB-1011", "Trailer Park", "RUAF Roadblock"]
+    extracts: ["Crossroads", "ZB-1011", "Trailer Park", "RUAF Roadblock"],
+    mapgenie: "https://mapgenie.io/tarkov/maps/customs"
   },
   {
     name: "Factory",
@@ -51,7 +52,8 @@ const mapsData = [
     difficulty: "Difficile",
     boss: "Tagilla",
     use: "Petite map PvP, rapide et dangereuse.",
-    extracts: ["Gate 3", "Cellars", "Med Tent Gate"]
+    extracts: ["Gate 3", "Cellars", "Med Tent Gate"],
+    mapgenie: "https://mapgenie.io/tarkov/maps/factory"
   },
   {
     name: "Woods",
@@ -59,7 +61,8 @@ const mapsData = [
     difficulty: "Intermédiaire",
     boss: "Shturman",
     use: "Grande map ouverte, utile pour quêtes et sniping.",
-    extracts: ["Outskirts", "UN Roadblock", "ZB-014", "RUAF Gate"]
+    extracts: ["Outskirts", "UN Roadblock", "ZB-014", "RUAF Gate"],
+    mapgenie: "https://mapgenie.io/tarkov/maps/woods"
   },
   {
     name: "Interchange",
@@ -67,7 +70,8 @@ const mapsData = [
     difficulty: "Intermédiaire",
     boss: "Killa",
     use: "Bon loot technique et électronique.",
-    extracts: ["Emercom Checkpoint", "Railway Exfil", "Power Station"]
+    extracts: ["Emercom Checkpoint", "Railway Exfil", "Power Station"],
+    mapgenie: "https://mapgenie.io/tarkov/maps/interchange"
   },
   {
     name: "Reserve",
@@ -75,7 +79,8 @@ const mapsData = [
     difficulty: "Difficile",
     boss: "Glukhar",
     use: "Très bon loot militaire et raiders.",
-    extracts: ["D-2", "Hermetic Door", "Cliff Descent", "Armored Train"]
+    extracts: ["D-2", "Hermetic Door", "Cliff Descent", "Armored Train"],
+    mapgenie: "https://mapgenie.io/tarkov/maps/reserve"
   },
   {
     name: "Shoreline",
@@ -83,7 +88,8 @@ const mapsData = [
     difficulty: "Intermédiaire",
     boss: "Sanitar",
     use: "Grande map orientée quêtes et resort.",
-    extracts: ["Tunnel", "Road to Customs", "Pier Boat", "Path to Lighthouse"]
+    extracts: ["Tunnel", "Road to Customs", "Pier Boat", "Path to Lighthouse"],
+    mapgenie: "https://mapgenie.io/tarkov/maps/shoreline"
   },
   {
     name: "Lighthouse",
@@ -91,7 +97,8 @@ const mapsData = [
     difficulty: "Difficile",
     boss: "Zryachiy / Rogues",
     use: "Très bon loot et présence des Rogues.",
-    extracts: ["Southern Road", "Path to Shoreline", "Mountain Pass"]
+    extracts: ["Southern Road", "Path to Shoreline", "Mountain Pass"],
+    mapgenie: "https://mapgenie.io/tarkov/maps/lighthouse"
   },
   {
     name: "Labs",
@@ -99,7 +106,8 @@ const mapsData = [
     difficulty: "Très difficile",
     boss: "Raiders",
     use: "PvP intense et loot haut niveau.",
-    extracts: ["Cargo Elevator", "Medical Elevator", "Parking Gate"]
+    extracts: ["Cargo Elevator", "Medical Elevator", "Parking Gate"],
+    mapgenie: "https://mapgenie.io/tarkov/maps/the-lab"
   },
   {
     name: "Streets",
@@ -107,7 +115,8 @@ const mapsData = [
     difficulty: "Très difficile",
     boss: "Kaban / Kollontay",
     use: "Très dense avec énormément de loot.",
-    extracts: ["Collapsed Crane", "Courtyard", "Damaged House", "Klimov Street"]
+    extracts: ["Collapsed Crane", "Courtyard", "Damaged House", "Klimov Street"],
+    mapgenie: "https://mapgenie.io/tarkov/maps/streets-of-tarkov"
   },
   {
     name: "Ground Zero",
@@ -115,7 +124,8 @@ const mapsData = [
     difficulty: "Débutant",
     boss: "Aucun",
     use: "Map d'introduction pour nouveaux joueurs.",
-    extracts: ["Emercom Checkpoint", "Police Checkpoint", "Nakatani Basement"]
+    extracts: ["Emercom Checkpoint", "Police Checkpoint", "Nakatani Basement"],
+    mapgenie: "https://mapgenie.io/tarkov/maps/ground-zero"
   }
 ];
 
@@ -796,6 +806,29 @@ function openMap(map, push = true) {
     <div class="quest-detail">
       <h2>${escapeHTML(map.name)}</h2>
 
+      ${map.mapgenie ? `
+        <a
+          href="${escapeHTML(map.mapgenie)}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mapgenie-btn"
+        >
+          🗺 Voir la carte interactive sur Mapgenie
+        </a>
+      ` : ""}
+
+      ${map.image ? `
+        <div class="map-image-container" onclick="toggleMapZoom(this)">
+          <img
+            src="${escapeHTML(map.image)}"
+            alt="Aperçu ${escapeHTML(map.name)}"
+            loading="lazy"
+            class="map-full-img"
+          >
+          <span class="map-zoom-hint">🔍 Tap pour zoomer</span>
+        </div>
+      ` : ""}
+
       <div class="detail-box">
         <p><strong>Difficulté :</strong> ${escapeHTML(map.difficulty)}</p>
         <p><strong>Boss :</strong> ${escapeHTML(map.boss)}</p>
@@ -810,6 +843,12 @@ function openMap(map, push = true) {
       </div>
     </div>
   `;
+}
+
+function toggleMapZoom(container) {
+  container.classList.toggle("map-zoomed");
+  const hint = container.querySelector(".map-zoom-hint");
+  if (hint) hint.style.display = "none";
 }
 
 /* =========================

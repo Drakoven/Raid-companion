@@ -591,6 +591,70 @@ button:focus-visible {
   border-radius: 2px;
 }
 
+/* Bouton Mapgenie */
+.mapgenie-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 14px;
+  background: var(--accent);
+  color: #111;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.mapgenie-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Image map zoomable */
+.map-image-container {
+  position: relative;
+  margin-bottom: 14px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: zoom-in;
+  max-height: 200px;
+  transition: max-height 0.35s ease;
+}
+
+.map-image-container.map-zoomed {
+  max-height: 800px;
+  cursor: zoom-out;
+  overflow-x: auto;
+}
+
+.map-full-img {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+  transition: object-fit 0.2s;
+}
+
+.map-image-container.map-zoomed .map-full-img {
+  object-fit: contain;
+  width: 100%;
+}
+
+.map-zoom-hint {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.65);
+  color: #fff;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 20px;
+  pointer-events: none;
+}
+
 /* =========================
    MAPS
 ========================= */
