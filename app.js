@@ -19,6 +19,9 @@ let pendingTraderSearch = "";
 let selectedAmmoPen = 0;
 let selectedAmmoCaliber = "all";
 
+// Comparaison munitions — max 3 sélectionnées
+let ammoComparison = [];
+
 // Pagination objets
 let itemsPage = 0;
 const ITEMS_PER_PAGE = 40;
@@ -1576,6 +1579,17 @@ async function showAmmo(push = true) {
         caliber
         damage
         penetrationPower
+        armorDamage
+        fragmentationChance
+        ricochetChance
+        heavyBleedModifier
+        lightBleedModifier
+        accuracyModifier
+        recoilModifier
+        initialSpeed
+        tracer
+        tracerColor
+        ammoType
       }
     }
   `;
@@ -1619,44 +1633,304 @@ function displayAmmo(ammoList, push = true) {
 
   const calibers = [...new Set(allAmmo.map(a => a.caliber).filter(Boolean))].sort();
 
-  content.innerHTML += `
-    <div class="ammo-caliber-filter">
-      <select onchange="setAmmoCaliberFilter(this.value)">
-        <option value="all">Tous les calibres</option>
-        ${calibers.map(caliber => `
-          <option value="${escapeHTML(caliber)}" ${selectedAmmoCaliber === caliber ? "selected" : ""}>
-            ${escapeHTML(caliber)}
-          </option>
-        `).join("")}
-      </select>
-    </div>
-    <div class="trader-filters"></div>
-  `;
-
-  ammoList
+  const filtered = ammoList
     .filter(ammo => ammo.penetrationPower >= selectedAmmoPen)
     .filter(ammo => selectedAmmoCaliber === "all" || ammo.caliber === selectedAmmoCaliber)
-    .sort((a, b) => b.penetrationPower - a.penetrationPower)
-    .forEach(ammo => {
-      const armorInfo = getArmorClassInfo(ammo.penetrationPower || 0);
-      const card = document.createElement("div");
-      card.className = "card";
+    .sort((a, b) => b.penetrationPower - a.penetrationPower);
 
-      card.innerHTML = `
-        <div class="item-card">
-          ${ammo.item?.iconLink ? `<img src="${escapeHTML(ammo.item.iconLink)}" alt="${escapeHTML(ammo.item.name)}" loading="lazy">` : ""}
-          <div>
-            <h3>${escapeHTML(ammo.item?.name) || "Munition inconnue"}</h3>
-            <p><strong>Calibre :</strong> ${escapeHTML(ammo.caliber) || "N/A"}</p>
-            <p><strong>Dégâts :</strong> ${ammo.damage || 0}</p>
-            <p><strong>Pénétration :</strong> ${ammo.penetrationPower || 0}</p>
-            <p><strong>Classe armure :</strong> <span class="${armorInfo.className}">${armorInfo.label}</span></p>
+  content.innerHTML += `
+    <div class="ammo-top-bar">
+      <div class="ammo-caliber-filter">
+        <select onchange="setAmmoCaliberFilter(this.value)">
+          <option value="all">Tous les calibres</option>
+          ${calibers.map(caliber => `
+            <option value="${escapeHTML(caliber)}" ${selectedAmmoCaliber === caliber ? "selected" : ""}>
+              ${escapeHTML(caliber)}
+            </option>
+          `).join("")}
+        </select>
+      </div>
+
+      ${ammoComparison.length > 0 ? `
+        <button class="compare-trigger-btn" onclick="showAmmoComparison()">
+          ⚖ Comparer (${ammoComparison.length})
+        </button>
+      ` : ""}
+    </div>
+
+    ${ammoComparison.length > 0 ? `
+      <div class="ammo-compare-bar">
+        ${ammoComparison.map(a => `
+          <div class="ammo-compare-chip">
+            <span>${escapeHTML(a.item?.shortName || a.item?.name || "?")}</span>
+            <button onclick="toggleAmmoComparison('${escapeHTML(a.item?.id)}'); displayAmmo(allAmmo, false)">✕</button>
+          </div>
+        `).join("")}
+        ${ammoComparison.length >= 2 ? `
+          <button class="compare-go-btn" onclick="showAmmoComparison()">Voir →</button>
+        ` : ""}
+      </div>
+    ` : ""}
+  `;
+
+  filtered.forEach(ammo => {
+    const armorInfo = getArmorClassInfo(ammo.penetrationPower || 0);
+    const isSelected = ammoComparison.some(a => a.item?.id === ammo.item?.id);
+
+    const card = document.createElement("div");
+    card.className = `card ${isSelected ? "ammo-selected" : ""}`;
+    card.onclick = () => displayAmmoDetail(ammo);
+
+    card.innerHTML = `
+      <div class="item-card">
+        ${ammo.item?.iconLink ? `<img src="${escapeHTML(ammo.item.iconLink)}" alt="${escapeHTML(ammo.item.name)}" loading="lazy">` : ""}
+        <div style="flex:1">
+          <h3>${escapeHTML(ammo.item?.name) || "Munition inconnue"}</h3>
+          <p><strong>Pen :</strong> ${ammo.penetrationPower || 0} &nbsp;·&nbsp; <strong>Dégâts :</strong> ${ammo.damage || 0}</p>
+          <p><span class="${armorInfo.className}">${armorInfo.label}</span></p>
+        </div>
+        <button
+          class="ammo-compare-btn ${isSelected ? "ammo-compare-btn--active" : ""}"
+          onclick="event.stopPropagation(); toggleAmmoComparison('${escapeHTML(ammo.item?.id)}'); displayAmmo(allAmmo, false)"
+          title="${isSelected ? "Retirer de la comparaison" : "Ajouter à la comparaison"}"
+        >
+          ${isSelected ? "✔" : "⚖"}
+        </button>
+      </div>
+    `;
+
+    content.appendChild(card);
+  });
+}
+
+/* =========================
+   DÉTAIL MUNITION
+========================= */
+
+function displayAmmoDetail(ammo) {
+  pushHistory("ammo");
+  setActiveNav("ammo");
+
+  const armorInfo = getArmorClassInfo(ammo.penetrationPower || 0);
+
+  const statBar = (value, max, colorClass) => {
+    const pct = Math.min(100, Math.round((value / max) * 100));
+    return `
+      <div class="stat-bar-wrap">
+        <div class="stat-bar-bg">
+          <div class="stat-bar-fill ${colorClass}" style="width:${pct}%"></div>
+        </div>
+        <span class="stat-bar-value">${value}</span>
+      </div>
+    `;
+  };
+
+  const fmt = (val, suffix = "") =>
+    val !== undefined && val !== null ? `${val}${suffix}` : "N/A";
+
+  const fmtPct = val =>
+    val !== undefined && val !== null ? `${Math.round(val * 100)}%` : "N/A";
+
+  const fmtMod = val => {
+    if (val === undefined || val === null) return "N/A";
+    const pct = Math.round(val * 100);
+    return pct > 0 ? `+${pct}%` : `${pct}%`;
+  };
+
+  content.innerHTML = `
+    <button class="back-btn" onclick="displayAmmo(allAmmo, false)">← Retour</button>
+
+    <div class="quest-detail">
+      <div class="ammo-detail-header">
+        ${ammo.item?.iconLink ? `<img src="${escapeHTML(ammo.item.iconLink)}" alt="${escapeHTML(ammo.item.name)}" loading="lazy" class="ammo-detail-icon">` : ""}
+        <div>
+          <h2 style="margin:0 0 4px">${escapeHTML(ammo.item?.name) || "Munition inconnue"}</h2>
+          <p style="margin:0; color:var(--muted)">${escapeHTML(ammo.caliber) || "Calibre inconnu"}</p>
+          ${ammo.tracer ? `<span class="kappa-badge" style="background:#8b6914">🔦 Traceur ${escapeHTML(ammo.tracerColor || "")}</span>` : ""}
+          ${ammo.ammoType ? `<span class="kappa-badge" style="background:var(--surface-3); color:var(--muted)">${escapeHTML(ammo.ammoType)}</span>` : ""}
+        </div>
+      </div>
+
+      <div class="detail-box">
+        <h3>Stats principales</h3>
+
+        <div class="stat-row">
+          <span class="stat-label">Dégâts</span>
+          ${statBar(ammo.damage || 0, 200, "bar-damage")}
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Pénétration</span>
+          ${statBar(ammo.penetrationPower || 0, 70, "bar-pen")}
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Dégâts armure</span>
+          ${statBar(ammo.armorDamage || 0, 100, "bar-armor")}
+        </div>
+
+        <p class="ammo-armor-class">
+          Classe armure : <span class="${armorInfo.className}">${armorInfo.label}</span>
+        </p>
+      </div>
+
+      <div class="detail-box">
+        <h3>Stats secondaires</h3>
+        <div class="ammo-stats-grid">
+          <div class="ammo-stat-cell">
+            <span class="ammo-stat-label">Fragmentation</span>
+            <span class="ammo-stat-value">${fmtPct(ammo.fragmentationChance)}</span>
+          </div>
+          <div class="ammo-stat-cell">
+            <span class="ammo-stat-label">Ricochet</span>
+            <span class="ammo-stat-value">${fmtPct(ammo.ricochetChance)}</span>
+          </div>
+          <div class="ammo-stat-cell">
+            <span class="ammo-stat-label">Saignement lourd</span>
+            <span class="ammo-stat-value">${fmtPct(ammo.heavyBleedModifier)}</span>
+          </div>
+          <div class="ammo-stat-cell">
+            <span class="ammo-stat-label">Saignement léger</span>
+            <span class="ammo-stat-value">${fmtPct(ammo.lightBleedModifier)}</span>
+          </div>
+          <div class="ammo-stat-cell">
+            <span class="ammo-stat-label">Précision</span>
+            <span class="ammo-stat-value">${fmtMod(ammo.accuracyModifier)}</span>
+          </div>
+          <div class="ammo-stat-cell">
+            <span class="ammo-stat-label">Recul</span>
+            <span class="ammo-stat-value">${fmtMod(ammo.recoilModifier)}</span>
+          </div>
+          <div class="ammo-stat-cell">
+            <span class="ammo-stat-label">Vitesse initiale</span>
+            <span class="ammo-stat-value">${fmt(ammo.initialSpeed, " m/s")}</span>
           </div>
         </div>
-      `;
+      </div>
 
-      content.appendChild(card);
-    });
+      <button
+        class="compare-add-btn ${ammoComparison.some(a => a.item?.id === ammo.item?.id) ? "compare-add-btn--active" : ""}"
+        onclick="toggleAmmoComparison('${escapeHTML(ammo.item?.id)}'); this.textContent = ammoComparison.some(a => a.item?.id === '${escapeHTML(ammo.item?.id)}') ? '✔ Dans la comparaison' : '⚖ Ajouter à la comparaison'; this.classList.toggle('compare-add-btn--active')"
+      >
+        ${ammoComparison.some(a => a.item?.id === ammo.item?.id) ? "✔ Dans la comparaison" : "⚖ Ajouter à la comparaison"}
+      </button>
+
+      ${ammoComparison.length >= 2 ? `
+        <button class="compare-trigger-btn" onclick="showAmmoComparison()">
+          ⚖ Voir la comparaison (${ammoComparison.length})
+        </button>
+      ` : ""}
+    </div>
+  `;
+}
+
+/* =========================
+   COMPARAISON MUNITIONS
+========================= */
+
+function toggleAmmoComparison(itemId) {
+  const existing = ammoComparison.findIndex(a => a.item?.id === itemId);
+
+  if (existing !== -1) {
+    ammoComparison.splice(existing, 1);
+    return;
+  }
+
+  if (ammoComparison.length >= 3) {
+    ammoComparison.shift(); // on retire la plus ancienne si on dépasse 3
+  }
+
+  const ammo = allAmmo.find(a => a.item?.id === itemId);
+  if (ammo) ammoComparison.push(ammo);
+}
+
+function showAmmoComparison() {
+  if (ammoComparison.length < 2) return;
+
+  setActiveNav("ammo");
+
+  const stats = [
+    { key: "damage",              label: "Dégâts",           max: 200, bar: "bar-damage" },
+    { key: "penetrationPower",    label: "Pénétration",      max: 70,  bar: "bar-pen" },
+    { key: "armorDamage",         label: "Dégâts armure",    max: 100, bar: "bar-armor" },
+    { key: "fragmentationChance", label: "Fragmentation",    pct: true },
+    { key: "heavyBleedModifier",  label: "Saignement lourd", pct: true },
+    { key: "initialSpeed",        label: "Vitesse (m/s)",    max: 1000 },
+    { key: "accuracyModifier",    label: "Précision",        mod: true },
+    { key: "recoilModifier",      label: "Recul",            mod: true },
+  ];
+
+  const formatVal = (ammo, stat) => {
+    const val = ammo[stat.key];
+    if (val === undefined || val === null) return "N/A";
+    if (stat.pct) return `${Math.round(val * 100)}%`;
+    if (stat.mod) {
+      const pct = Math.round(val * 100);
+      return pct > 0 ? `+${pct}%` : `${pct}%`;
+    }
+    return val;
+  };
+
+  const bestVal = (stat) => {
+    const vals = ammoComparison.map(a => a[stat.key] ?? -Infinity);
+    // Pour recul et précision : le plus bas est le mieux (mod négatif = bien)
+    if (stat.key === "recoilModifier" || stat.key === "accuracyModifier") return Math.min(...vals);
+    return Math.max(...vals);
+  };
+
+  content.innerHTML = `
+    <button class="back-btn" onclick="displayAmmo(allAmmo, false)">← Retour</button>
+
+    <h2>⚖ Comparaison</h2>
+
+    <div class="compare-table">
+      <!-- En-têtes -->
+      <div class="compare-header-row">
+        <div class="compare-label-cell"></div>
+        ${ammoComparison.map(ammo => `
+          <div class="compare-ammo-header">
+            ${ammo.item?.iconLink ? `<img src="${escapeHTML(ammo.item.iconLink)}" alt="${escapeHTML(ammo.item.name)}" loading="lazy">` : ""}
+            <span>${escapeHTML(ammo.item?.shortName || ammo.item?.name || "?")}</span>
+            <small>${escapeHTML(ammo.caliber || "")}</small>
+          </div>
+        `).join("")}
+      </div>
+
+      <!-- Lignes de stats -->
+      ${stats.map(stat => {
+        const best = bestVal(stat);
+        return `
+          <div class="compare-stat-row">
+            <div class="compare-label-cell">${stat.label}</div>
+            ${ammoComparison.map(ammo => {
+              const val = ammo[stat.key];
+              const isBest = val !== undefined && val !== null && val === best;
+              const display = formatVal(ammo, stat);
+
+              let barHtml = "";
+              if (stat.bar && val !== undefined && val !== null) {
+                const pct = Math.min(100, Math.round((val / stat.max) * 100));
+                barHtml = `<div class="compare-mini-bar"><div class="stat-bar-fill ${stat.bar}" style="width:${pct}%"></div></div>`;
+              }
+
+              return `
+                <div class="compare-value-cell ${isBest ? "compare-best" : ""}">
+                  ${barHtml}
+                  <span>${display}</span>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        `;
+      }).join("")}
+    </div>
+
+    <button
+      class="reset-filter-btn"
+      style="margin-top:16px"
+      onclick="ammoComparison = []; displayAmmo(allAmmo, false)"
+    >
+      ✕ Vider la comparaison
+    </button>
+  `;
 }
 
 function setAmmoPenFilter(value) {
