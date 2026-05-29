@@ -8,7 +8,12 @@ A mobile-first Progressive Web App (PWA) companion for Escape from Tarkov.
 - 🟣 **Kappa Progress** — Track your Kappa quest completion
 - 🏚 **Hideout** — Station-by-station progress with item counters
 - 💰 **Traders** — Sales and barters with level filters
-- 🗺 **Maps** — Boss info, extracts, and direct link to Mapgenie interactive maps
+- 🗺 **Maps** — Interactive maps built from scratch with Leaflet.js
+  - PMC & Scav spawn points
+  - All extractions (PMC, Scav-only, Co-op)
+  - Boss spawn zones & patrol areas
+  - Goons spawn points
+  - Toggle filters by category
 - 🔫 **Ammo / Ballistics** — All ammo sorted by penetration, caliber filter, side-by-side comparison (up to 3)
 - ⭐ **Favorites** — Save your important quests and items
 - 📱 **Installable PWA** — Works offline once installed, no app store needed
@@ -17,8 +22,35 @@ A mobile-first Progressive Web App (PWA) companion for Escape from Tarkov.
 
 - HTML / CSS / JavaScript (vanilla)
 - [Tarkov.dev GraphQL API](https://tarkov.dev)
+- [Leaflet.js](https://leafletjs.com) — Interactive map rendering
 - Netlify (hosting)
 - PWA (Service Worker, Web Manifest)
+
+## Maps
+
+Interactive maps are hand-crafted using real in-game knowledge and Leaflet.js.
+Each map includes layered markers with toggle filters:
+
+| Layer | Description |
+|---|---|
+| 🟢 Extractions | PMC extraction points |
+| 🩵 Scav Extractions | Scav-only extraction points |
+| 🔵 Co-Op Extractions | Require both PMC + Scav |
+| 🔴 Boss | Boss spawn points |
+| 🟠 Goons | The Goons squad spawn zones |
+| ⚫ PMC Spawns | Player spawn points |
+
+**Maps available:**
+- [x] Woods
+- [ ] Customs *(coming soon)*
+- [ ] Interchange *(coming soon)*
+- [ ] Shoreline *(coming soon)*
+- [ ] Reserve *(coming soon)*
+- [ ] Lighthouse *(coming soon)*
+- [ ] Streets *(coming soon)*
+- [ ] Factory *(coming soon)*
+- [ ] Labs *(coming soon)*
+- [ ] Ground Zero *(coming soon)*
 
 ## Live App
 
@@ -42,11 +74,14 @@ cd raid-companion
 
 ## Data Source
 
-All game data is fetched from [tarkov.dev](https://tarkov.dev), a community-maintained GraphQL API for Escape from Tarkov. Data is cached locally for 1 hour to reduce API calls.
+All game data is fetched from [tarkov.dev](https://tarkov.dev), a community-maintained
+GraphQL API for Escape from Tarkov. Data is cached locally for 1 hour to reduce API calls.
+Map marker data is manually curated based on in-game experience.
 
 ## Contributing
 
-Feedback, bug reports, and feature suggestions are welcome! Feel free to open an issue or a pull request.
+Feedback, bug reports, and feature suggestions are welcome!
+Feel free to open an issue or a pull request.
 
 ## Disclaimer
 

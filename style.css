@@ -1459,3 +1459,52 @@ button:focus-visible {
     font-size: 11px;
   }
 }
+
+/* ======= INTERACTIVE MAP ======= */
+
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+
+.map-filter-btn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.map-filter-btn.active {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.map-marker {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+}
+
+.map-marker-extractions { background: #27ae60; }
+.map-marker-boss        { background: #c0392b; }
+.map-marker-quests      { background: #8e44ad; }
+.map-marker-loot        { background: #d6b56d; color: #1a1200; }
+.map-marker-goons       { background: #e67e22; }
+.map-marker-spawn       { background: #5c5c5c; }
+.map-marker-extractions_scav { background: #09d4ac; }
+.map-marker-extractions_coop { background: #3498db; }

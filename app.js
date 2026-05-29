@@ -62,7 +62,8 @@ const mapsData = [
     boss: "Shturman",
     use: "Large open map, great for quests and sniping.",
     extracts: ["Outskirts", "UN Roadblock", "ZB-014", "RUAF Gate"],
-    mapgenie: "https://mapgenie.io/tarkov/maps/woods"
+    mapgenie: "https://mapgenie.io/tarkov/maps/woods",
+    interactive: "assets/maps/interactive/woods.png"
   },
   {
     name: "Interchange",
@@ -806,9 +807,13 @@ function openMap(map, push = true) {
     <div class="quest-detail">
       <h2>${escapeHTML(map.name)}</h2>
 
-      ${map.mapgenie ? `
-        <a
-          href="${escapeHTML(map.mapgenie)}"
+      ${map.interactive ? `
+        <button class="mapgenie-btn" onclick="openInteractiveMap('${escapeHTML(map.name)}', '${escapeHTML(map.interactive)}')">
+          🗺 Interactive Map
+        </button>
+      ` : map.mapgenie ? `
+        
+        <a href="${escapeHTML(map.mapgenie)}"
           target="_blank"
           rel="noopener noreferrer"
           class="mapgenie-btn"
@@ -845,11 +850,200 @@ function openMap(map, push = true) {
   `;
 }
 
-function toggleMapZoom(container) {
-  container.classList.toggle("map-zoomed");
-  const hint = container.querySelector(".map-zoom-hint");
-  if (hint) hint.style.display = "none";
+function openInteractiveMap(mapName, imagePath) {
+  currentSection = "map-detail";
+  setActiveNav("maps");
+  searchInput.style.display = "none";
+
+  // Conteneur de la map
+  content.innerHTML = `
+    <button class="back-btn" onclick="openMap(mapsData.find(m => m.name === '${escapeHTML(mapName)}'), false)">
+      ← Back
+    </button>
+    <h2>${escapeHTML(mapName)} — Interactive Map</h2>
+
+    <div class="filter-bar" id="mapFilterBar">
+      <button class="map-filter-btn active" data-layer="extractions" onclick="toggleMapLayer('extractions', this)">🟢 Extractions</button>
+      <button class="map-filter-btn active" data-layer="boss" onclick="toggleMapLayer('boss', this)">🔴 Boss</button>
+      <button class="map-filter-btn active" data-layer="quests" onclick="toggleMapLayer('quests', this)">🟣 Quests</button>
+      <button class="map-filter-btn active" data-layer="loot" onclick="toggleMapLayer('loot', this)">🟡 Loot</button>
+      <button class="map-filter-btn active" data-layer="goons" onclick="toggleMapLayer('goons', this)">🟠 Goons</button>
+      <button class="map-filter-btn active" data-layer="spawn" onclick="toggleMapLayer('spawn', this)">⚫ Spawn</button>
+      <button class="map-filter-btn active" data-layer="extractions_scav" onclick="toggleMapLayer('extractions_scav', this)"> 🟢 Scav Extractions</button>
+      <button class="map-filter-btn active" data-layer="extractions_coop" onclick="toggleMapLayer('extractions_coop', this)"> 🔵 Co-Op Extractions</button>
+    </div>
+
+    <div id="leaflet-map" style="width:100%; height:70vh; border-radius:12px; overflow:hidden; margin-top:8px;"></div>
+  `;
+
+  // Initialise Leaflet après que le DOM est prêt
+  setTimeout(() => initLeafletMap(mapName, imagePath), 50);
 }
+
+// Stockage global de la map Leaflet et de ses layers
+let leafletMap = null;
+let mapLayers = {};
+
+function initLeafletMap(mapName, imagePath) {
+  // Nettoie une ancienne instance si elle existe
+  if (leafletMap) {
+    leafletMap.remove();
+    leafletMap = null;
+  }
+
+  const img = new Image();
+  img.src = imagePath;
+  img.onload = () => {
+    const W = img.naturalWidth;
+    const H = img.naturalHeight;
+
+    // Bounds de l'image en coordonnées "pixel"
+    const bounds = [[0, 0], [H, W]];
+
+    leafletMap = L.map("leaflet-map", {
+      crs: L.CRS.Simple,       // Pas de projection géographique, juste des pixels
+      minZoom: -2,
+      maxZoom: 2,
+      zoomSnap: 0.5,
+    });
+
+    // L'image comme fond de carte
+    L.imageOverlay(imagePath, bounds).addTo(leafletMap);
+    leafletMap.fitBounds(bounds);
+
+    // MODE ÉDITION — affiche les coordonnées au clic
+    leafletMap.on('click', function(e) {
+    console.log(`lat: ${Math.round(e.latlng.lat)}, lng: ${Math.round(e.latlng.lng)}`);
+    });
+
+    // Charge les marqueurs de cette map
+    loadMapMarkers(mapName);
+  };
+}
+
+function loadMapMarkers(mapName) {
+  const markers = woodsMarkers; // on étendra ça aux autres maps plus tard
+  mapLayers = {};
+
+  markers.forEach(m => {
+    if (!mapLayers[m.type]) mapLayers[m.type] = [];
+
+    // Icône colorée selon le type
+    const icon = L.divIcon({
+      className: "",
+      html: `<div class="map-marker map-marker-${m.type}">${m.icon}</div>`,
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
+    });
+
+    const marker = L.marker([m.lat, m.lng], { icon });
+
+    // Popup avec infos — liaison automatique avec les quêtes si questId
+    let popupContent = `<b>${m.name}</b>`;
+    if (m.info) popupContent += `<br>${m.info}`;
+    if (m.questId) {
+      const quest = allTasks.find(t => t.id === m.questId);
+      if (quest) {
+        const done = completedTasks.includes(quest.id);
+        popupContent += `<br><span style="color:${done ? '#27ae60' : '#a569bd'}">${done ? "✔" : "🟣"} ${quest.name}</span>`;
+      }
+    }
+
+    marker.bindPopup(popupContent);
+    marker.addTo(leafletMap);
+    mapLayers[m.type].push(marker);
+  });
+}
+
+function toggleMapLayer(type, btn) {
+  btn.classList.toggle("active");
+  const layers = mapLayers[type] || [];
+  layers.forEach(marker => {
+    if (leafletMap.hasLayer(marker)) {
+      leafletMap.removeLayer(marker);
+    } else {
+      leafletMap.addLayer(marker);
+    }
+  });
+}
+
+/* =========================
+   DONNÉES MARQUEURS — WOODS
+   lat/lng = coordonnées en pixels sur l'image
+   (à affiner en cliquant sur la map)
+========================= */
+
+const woodsMarkers = [
+  // EXTRACTIONS
+  { type: "extractions", icon: "E", name: "Outskirts",     info: "Main west extraction", lat: 75, lng: 174},
+  { type: "extractions", icon: "E", name: "UN Roadblock",  info: "North extraction",     lat: 121,  lng: 742 },
+  { type: "extractions", icon: "E", name: "ZB-014",        info: "Requires key ZB-014",  lat: 265, lng: 110 },
+  { type: "extractions", icon: "E", name: "RUAF Gate",     info: "South extraction",     lat: 38, lng: 484 },
+  { type: "extractions", icon: "E", name: "ZB-016",        info: "When green flares are present, extraction is available", lat: 293, lng: 647 },
+  { type: "extractions", icon: "E", name: "Northern UN Roadblock",        info: "Always Open",  lat: 351, lng: 752 },
+  { type: "extractions", icon: "E", name: "Vridge V EX",       info: "The black SUV must be present for extraction / 5,000 Roubles each (influenced by Scav Karma)", lat: 631, lng: 708 },
+  { type: "extractions", icon: "E", name: "Power Line Passage",       info: "Requirements: Green Flare Extract - Make sure to be in the Flare firing area. After firing the flare keep running until the timer appears - it  will take a bit of running before you see it", lat: 343, lng: 83 },
+
+  // EXTRACTION SCAV
+  { type: "extractions_scav", icon: "ES", name: "Scav Extraction", info: "Scav House", lat: 151, lng: 130 },
+  { type: "extractions_scav", icon: "ES", name: "Scav Extraction", info: "Dead man's Place", lat: 143, lng: 281 },
+  { type: "extractions_scav", icon: "ES", name: "Scav Extraction", info: "The Boat", lat: 166, lng: 284 },
+  { type: "extractions_scav", icon: "ES", name: "Scav Extraction", info: "Scav Bunker", lat: 758, lng: 248 },
+  { type: "extractions_scav", icon: "ES", name: "Scav Extraction", info: "Scav Bridge", lat: 848, lng: 333 },
+  { type: "extractions_scav", icon: "ES", name: "Scav Extraction", info: "Mountain Stash", lat: 441, lng: 528 },
+  { type: "extractions_scav", icon: "ES", name: "Scav Extraction", info: "Eastern Stash", lat: 329, lng: 729 },
+  { type: "extractions_scav", icon: "ES", name: "Scav Extraction", info: "Old Railway Depot", lat: 212, lng: 736 },
+
+  // EXTRACTIONS CO-OP
+  { type: "extractions_coop", icon: "EC", name: "Factory Gate", info: "Requirements: Scav + PMC ", lat: 71, lng: 629 },
+  { type: "extractions_coop", icon: "EC", name: "Friendship Bridge", info: "Requirements: Scav + PMC ", lat: 842, lng: 327 },
+
+  // BOSS
+  { type: "boss", icon: "S", name: "Shturman", info: "Boss —  patrols sawmill area", lat: 335, lng: 370 },
+  { type: "boss", icon: "S", name: "Shturman", info: "Boss — patrols sawmill area", lat: 249, lng: 313 },
+  { type: "boss", icon: "S", name: "Shturman", info: "Boss — patrols sawmill area", lat: 393, lng: 351 },
+
+  // Goons
+  { type: "goons", icon: "G", name: "The Goons", info: "Spawn aléatoire - zone nord", lat: 634, lng: 217 },
+  { type: "goons", icon: "G", name: "The Goons", info: "Spawn aléatoire - zone nord", lat: 762, lng: 253 },
+  { type: "goons", icon: "G", name: "The Goons", info: "Spawn aléatoire - zone nord", lat: 780, lng: 310 },
+  { type: "goons", icon: "G", name: "The Goons", info: "Spawn aléatoire - zone nord", lat: 759, lng: 446 },
+
+  // PMC spawn
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 758, lng: 157 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 683, lng: 166 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 590, lng: 137 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 509, lng: 248 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 354, lng: 145 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 290, lng: 122 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 179, lng: 110 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 135, lng: 59 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 128, lng: 115 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 93, lng: 76 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 93, lng: 157 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 108, lng: 229 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 187, lng: 249 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 726, lng: 357 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 668, lng: 347 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 411, lng: 299 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 668, lng: 437 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 718, lng: 566 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 569, lng: 574 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 640, lng: 671 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 517, lng: 793 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 436, lng: 560 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 391, lng: 612 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 401, lng: 727 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 338, lng: 707 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 309, lng: 730 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 292, lng: 733 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 165, lng: 737 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 152, lng: 627 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 256, lng: 732 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 112, lng: 745 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 84, lng: 584 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 65, lng: 456 },
+];
 
 /* =========================
    HIDEOUT
