@@ -44,7 +44,8 @@ const mapsData = [
     boss: "Reshala",
     use: "Very popular for early quests.",
     extracts: ["Crossroads", "ZB-1011", "Trailer Park", "RUAF Roadblock"],
-    mapgenie: "https://mapgenie.io/tarkov/maps/customs"
+    mapgenie: "https://mapgenie.io/tarkov/maps/customs",
+    interactive: "assets/maps/interactive/customs.png" 
   },
   {
     name: "Factory",
@@ -922,7 +923,12 @@ function initLeafletMap(mapName, imagePath) {
 }
 
 function loadMapMarkers(mapName) {
-  const markers = woodsMarkers; // on étendra ça aux autres maps plus tard
+  const markersMap = {
+    "Woods": woodsMarkers,
+    "Customs": customsMarkers,
+  };
+
+  const markers = markersMap[mapName] || [];
   mapLayers = {};
 
   markers.forEach(m => {
@@ -1043,6 +1049,53 @@ const woodsMarkers = [
   { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 112, lng: 745 },
   { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 84, lng: 584 },
   { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 65, lng: 456 },
+
+  // Quests
+  { type: "quests", icon: "Q", name: "Introduction", info: "Jeager's Message - Underneath the wooden lookout post.", lat: 299, lng: 560 , questId: "5d2495a886f77425cd51e403"},
+];
+
+const customsMarkers = [
+  // EXTRACTIONS
+  // BOSS
+  { type: "boss", icon: "S", name: "Reshala", info: "Boss —  patrols sawmill area", lat: 240, lng: 495 },
+  { type: "boss", icon: "S", name: "Reshala", info: "Boss —  patrols sawmill area", lat: 363, lng: 293 },
+  { type: "boss", icon: "S", name: "Reshala", info: "Boss —  patrols sawmill area", lat: 534, lng: 493 },
+  // Goons
+  { type: "goons", icon: "G", name: "The Goons", info: "Spawn aléatoire - zone nord", lat: 511, lng: 501 },
+  { type: "goons", icon: "G", name: "The Goons", info: "Spawn aléatoire - zone nord", lat: 515, lng: 630 },
+  // PMC spawn
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 225, lng: 325 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 183, lng: 284 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 217, lng: 167 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 252, lng: 103 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 344, lng: 147 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 351, lng: 32 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 495, lng: 72 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 509, lng: 117 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 460, lng: 191 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 504, lng: 213 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 480, lng: 222 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 626, lng: 1037 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 478, lng: 1028 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 400, lng: 924 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 283, lng: 709 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 532, lng: 191 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 491, lng: 316 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 461, lng: 378 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 597, lng: 406 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 522, lng: 638 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 521, lng: 698 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 616, lng: 841 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 527, lng: 858 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 513, lng: 891 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 528, lng: 914 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 617, lng: 921 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 480, lng: 946 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 439, lng: 868 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 355, lng: 838 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 535, lng: 977 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 515, lng: 322 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 447, lng: 120 },
 ];
 
 /* =========================
@@ -1753,6 +1806,7 @@ function toggleTaskComplete(taskId) {
     completedTasks.push(taskId);
   }
   localStorage.setItem("completedTasks", JSON.stringify(completedTasks));
+  updateQuestCompletionUI(taskId);
 }
 
 function isTaskComplete(taskId) {
