@@ -47,12 +47,12 @@ Each map includes layered markers with toggle filters:
 **Maps available:**
 - [x] Woods — Extractions, Boss, Goons, PMC Spawns, Transit, Quests
 - [x] Customs — Extractions, Boss, Goons, PMC Spawns, Quests
+- [x] Factory — Extractions, Boss, PMC Spawns, Transit, Quests
 - [ ] Interchange *(coming soon)*
 - [ ] Shoreline *(coming soon)*
 - [ ] Reserve *(coming soon)*
 - [ ] Lighthouse *(coming soon)*
 - [ ] Streets *(coming soon)*
-- [ ] Factory *(coming soon)*
 - [ ] Labs *(coming soon)*
 - [ ] Ground Zero *(coming soon)*
 
@@ -81,6 +81,10 @@ cd raid-companion
 All game data is fetched from [tarkov.dev](https://tarkov.dev), a community-maintained
 GraphQL API for Escape from Tarkov. Data is cached locally for 1 hour to reduce API calls.
 Map marker data is manually curated based on real in-game experience and knowledge.
+
+## Community
+
+Join the francophone Tarkov community: [r/TarkovEntraide](https://www.reddit.com/r/TarkovEntraide)
 
 ## Contributing
 
