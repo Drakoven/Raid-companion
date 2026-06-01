@@ -11,8 +11,10 @@ A mobile-first Progressive Web App (PWA) companion for Escape from Tarkov.
 - 🗺 **Maps** — Interactive maps built from scratch with Leaflet.js
   - PMC & Scav spawn points
   - All extractions (PMC, Scav-only, Co-op)
-  - Boss spawn zones & patrol areas
+  - Boss spawn points
   - Goons spawn points
+  - Transit points
+  - Quest markers with live completion status
   - Toggle filters by category
 - 🔫 **Ammo / Ballistics** — All ammo sorted by penetration, caliber filter, side-by-side comparison (up to 3)
 - ⭐ **Favorites** — Save your important quests and items
@@ -39,10 +41,12 @@ Each map includes layered markers with toggle filters:
 | 🔴 Boss | Boss spawn points |
 | 🟠 Goons | The Goons squad spawn zones |
 | ⚫ PMC Spawns | Player spawn points |
+| 🟨 Transit Points | BTR / inter-map transit locations |
+| 🟣 Quests | Quest objectives with live completion tracking |
 
 **Maps available:**
-- [x] Woods
-- [ ] Customs *(coming soon)*
+- [x] Woods — Extractions, Boss, Goons, PMC Spawns, Transit, Quests
+- [x] Customs — Extractions, Boss, Goons, PMC Spawns, Quests
 - [ ] Interchange *(coming soon)*
 - [ ] Shoreline *(coming soon)*
 - [ ] Reserve *(coming soon)*
@@ -76,7 +80,7 @@ cd raid-companion
 
 All game data is fetched from [tarkov.dev](https://tarkov.dev), a community-maintained
 GraphQL API for Escape from Tarkov. Data is cached locally for 1 hour to reduce API calls.
-Map marker data is manually curated based on in-game experience.
+Map marker data is manually curated based on real in-game experience and knowledge.
 
 ## Contributing
 
