@@ -1508,3 +1508,5 @@ button:focus-visible {
 .map-marker-spawn       { background: #5c5c5c; }
 .map-marker-extractions_scav { background: #09d4ac; }
 .map-marker-extractions_coop { background: #3498db; }
+.map-marker-transit { background: #f39c12; }
+.map-marker-keys { background: #c0392b; color: #fff; }

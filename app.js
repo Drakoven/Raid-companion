@@ -872,6 +872,7 @@ function openInteractiveMap(mapName, imagePath) {
       <button class="map-filter-btn active" data-layer="spawn" onclick="toggleMapLayer('spawn', this)">⚫ Spawn</button>
       <button class="map-filter-btn active" data-layer="extractions_scav" onclick="toggleMapLayer('extractions_scav', this)"> 🟢 Scav Extractions</button>
       <button class="map-filter-btn active" data-layer="extractions_coop" onclick="toggleMapLayer('extractions_coop', this)"> 🔵 Co-Op Extractions</button>
+      <button class="map-filter-btn active" data-layer="transit" onclick="toggleMapLayer('transit', this)"> 🟨 Transit Points</button>
     </div>
 
     <div id="leaflet-map" style="width:100%; height:70vh; border-radius:12px; overflow:hidden; margin-top:8px;"></div>
@@ -1050,19 +1051,81 @@ const woodsMarkers = [
   { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 84, lng: 584 },
   { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 65, lng: 456 },
 
+  // TRANSIT
+  { type: "transit", icon: "T", name: "Transit", info: "Transit To Lighthouse", lat: 79, lng: 79 },
+  { type: "transit", icon: "T", name: "Transit", info: "Transit To Reserve", lat: 73, lng: 239 },
+  { type: "transit", icon: "T", name: "Transit", info: "Transit To Customs", lat: 39, lng: 489 },
+  { type: "transit", icon: "T", name: "Transit", info: "Transit To Factory", lat: 77, lng: 628 },
+
   // Quests
   { type: "quests", icon: "Q", name: "Introduction", info: "Jeager's Message - Underneath the wooden lookout post.", lat: 299, lng: 560 , questId: "5d2495a886f77425cd51e403"},
+  { type: "quests", icon: "Q", name: "Thrifty Stash - ZB-014", info: "Stash an Iskra lunch box & 0.6L water bottle in the broken crate beside the wooden crate in the ZB-014 bunker", lat: 261, lng: 114 , questId: "5d25b6be86f77444001e1b89"},
+  { type: "quests", icon: "Q", name: "Thrifty Stash - ZB-016", info: "Stash an Iskra lunch box & 0.6L water bottle in the broken crate beside the wooden crate in the ZB-016 bunker", lat: 291, lng: 651 , questId: "5d25b6be86f77444001e1b89"},
+  { type: "quests", icon: "Q", name: "Steady Signal - Weather Station 1", info: "Mark First Weather Station", lat: 715, lng: 143 , questId: "6578ec473dbd035d04531a8d"},
+  { type: "quests", icon: "Q", name: "Steady Signal - Weather Station 2", info: "Mark Second Weather Station", lat: 488, lng: 528 , questId: "6578ec473dbd035d04531a8d"},
+  { type: "quests", icon: "Q", name: "Steady Signal - Weather Station 3", info: "Mark Third Weather Station", lat: 658, lng: 458 , questId: "6578ec473dbd035d04531a8d"},
+  { type: "quests", icon: "Q", name: "Steady Signal - Weather Station 4", info: "Mark Fourth Weather Station", lat: 96, lng: 238 , questId: "6578ec473dbd035d04531a8d"},
+  { type: "quests", icon: "Q", name: "Steady Signal - Weather Station 5", info: "Mark Fifth Weather Station", lat: 142, lng: 699 , questId: "6578ec473dbd035d04531a8d"},
+  { type: "quests", icon: "Q", name: "Supply Plan", info: "Underneath bed in cabin #3", lat: 357, lng: 400 , questId: "596a0e1686f7741ddf17dbee"},
+  { type: "quests", icon: "Q", name: "Search Mission", info: "USEC Temporary Camp", lat: 600, lng: 210 , questId: "5fd9fad9c1ce6b1a3b486d00"},
+  { type: "quests", icon: "Q", name: "Search Mission", info: "Prapor's Convoy", lat: 692, lng: 270 , questId: "5fd9fad9c1ce6b1a3b486d00"},
+  { type: "quests", icon: "Q", name: "Gratitude", info: "Beside the barrels on the wooden jetty", lat: 241, lng: 382 , questId: "5ae449b386f77446d8741719"},
+  { type: "quests", icon: "Q", name: "A Helping Hand", info: "Location: It can be found in 1 of 2 locations in the northwest building of the train depot. The depot can only be accessed via the BTR Driver's taxi service    First spawn under the table next to the bed. Second spawn on the desk in the back office", lat: 221, lng: 791 , questId: "6752f6d83038f7df520c83e8"},
+  { type: "quests", icon: "Q", name: "Health Care Privacity - Part 3", info: "Look for the blood on the right sliding door of the crashed car.", lat: 163, lng: 457 , questId: "5a68665c86f774255929b4c7"},
+  { type: "quests", icon: "Q", name: "Hunting Trip", info: "Eliminate Shturman with a headshot from over 75 meters away while using an M700 Sniper rifle with the Burris FullField TAC30 1-4x24 30mm riflescope.", lat: 329, lng: 373 , questId: "5d25e4ca86f77409dd5cdf2c"},
+  { type: "quests", icon: "Q", name: "The Blood Of War - Part 3", info: "Requirements: MS2000 Marker. Oil Barrels #1", lat: 363, lng: 168 , questId: "5c10f94386f774227172c572"},
+  { type: "quests", icon: "Q", name: "The Blood Of War - Part 3", info: "Requirements: MS2000 Marker. Oil Barrels #2", lat: 291, lng: 606 , questId: "5c10f94386f774227172c572"},
+  { type: "quests", icon: "Q", name: "The Blood Of War - Part 3", info: "Requirements: MS2000 Marker. Oil Barrels #3", lat: 440, lng: 533 , questId: "5c10f94386f774227172c572"},
+  { type: "quests", icon: "Q", name: "The Huntsman Path - Woods Keeper", info: "Locate, Kill Shturman and extract with the key", lat: 321, lng: 362 , questId: "5d25e2ee86f77443e35162ea"},
 ];
+
+/* =========================
+   DONNÉES MARQUEURS — CUSTOMS
+   lat/lng = coordonnées en pixels sur l'image
+   (à affiner en cliquant sur la map)
+========================= */
 
 const customsMarkers = [
   // EXTRACTIONS
+  { type: "extractions", icon: "E", name: "ZB10-11", info: "Main extraction, always open", lat: 527, lng: 56 },
+  { type: "extractions", icon: "E", name: "Old Gas Station", info: "When green flares are present, extraction is available.", lat: 581, lng: 382 },
+  { type: "extractions", icon: "E", name: "ZB10-13", info: "Activate Lever in Warehouse 4. Factory Exit Key to unlock ZB10-13 Gate (Factory)", lat: 645, lng: 644 },
+  { type: "extractions", icon: "E", name: "Railroad Passage Extract", info: "Flare gun with Green cartridge", lat: 679, lng: 525 },
+  { type: "extractions", icon: "E", name: "Trailer Park", info: "Main extraction, always open", lat: 629, lng: 1033 },
+  { type: "extractions", icon: "E", name: "Crossroads", info: "Main extraction, always open", lat: 492, lng: 1044 },
+  { type: "extractions", icon: "E", name: "Smuggler's Boat", info: "Campfire must be lit for extraction. Requires Note with code word Voron", lat: 260, lng: 736 },
+  { type: "extractions", icon: "E", name: "Dorm V-EX", info: "The black SUV must be present for extraction. 5000 Rubles per player. Max 4 players.", lat: 172, lng: 518 },
+  { type: "extractions", icon: "E", name: "Smuggler's Bunker", info: "Need (Note with Codeword Voron)", lat: 511, lng: 122 },
+
+  // EXTRACTIONS CO-OP
+  { type: "extractions_coop", icon: "EC", name: "Boiler Room Extract", info: "Requirements: Scav + PMC ", lat: 455, lng: 497 },
+
+  // EXTRACTIONS SCAV
+  { type: "extractions_scav", icon: "ES", name: "Factory Far Corner", info: "Always available", lat: 560, lng: 38 },
+  { type: "extractions_scav", icon: "ES", name: "Old Gas Station Gate", info: "Always available", lat: 596, lng: 390 },
+  { type: "extractions_scav", icon: "ES", name: "Warehouse 4", info: "Always available", lat: 419, lng: 356 },
+  { type: "extractions_scav", icon: "ES", name: "Factory Shacks", info: "Always available", lat: 379, lng: 491 },
+  { type: "extractions_scav", icon: "ES", name: "Warehouse 17", info: "Always available", lat: 464, lng: 653 },
+  { type: "extractions_scav", icon: "ES", name: "Railroad To Tarkov", info: "Always available", lat: 615, lng: 873 },
+  { type: "extractions_scav", icon: "ES", name: "Trailer Park Workers' Shake", info: "Always available", lat: 630, lng: 957 },
+  { type: "extractions_scav", icon: "ES", name: "Railroad To Port", info: "Always available", lat: 343, lng: 850 },
+  { type: "extractions_scav", icon: "ES", name: "Sniper RoadBlock", info: "Always available", lat: 263, lng: 691 },
+  { type: "extractions_scav", icon: "ES", name: "Old Roadgate", info: "Always available", lat: 174, lng: 510 },
+  { type: "extractions_scav", icon: "ES", name: "Railroad To Military Base", info: "Always available", lat: 165, lng: 201 },
+  { type: "extractions_scav", icon: "ES", name: "Passage Between Rocks", info: "Always available", lat: 188, lng: 151 },
+  { type: "extractions_scav", icon: "ES", name: "Military Base CP", info: "Always available", lat: 264, lng: 45 },
+  { type: "extractions_scav", icon: "ES", name: "Scav Checkpoint", info: "Always available", lat: 418, lng: 37 },
+  { type: "extractions_scav", icon: "ES", name: "Administration Gate", info: "Always available", lat: 444, lng: 20 },
+
   // BOSS
   { type: "boss", icon: "S", name: "Reshala", info: "Boss —  patrols sawmill area", lat: 240, lng: 495 },
   { type: "boss", icon: "S", name: "Reshala", info: "Boss —  patrols sawmill area", lat: 363, lng: 293 },
   { type: "boss", icon: "S", name: "Reshala", info: "Boss —  patrols sawmill area", lat: 534, lng: 493 },
+
   // Goons
   { type: "goons", icon: "G", name: "The Goons", info: "Spawn aléatoire - zone nord", lat: 511, lng: 501 },
   { type: "goons", icon: "G", name: "The Goons", info: "Spawn aléatoire - zone nord", lat: 515, lng: 630 },
+
   // PMC spawn
   { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 225, lng: 325 },
   { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 183, lng: 284 },
