@@ -54,7 +54,8 @@ const mapsData = [
     boss: "Tagilla",
     use: "Small PvP map, fast and dangerous.",
     extracts: ["Gate 3", "Cellars", "Med Tent Gate"],
-    mapgenie: "https://mapgenie.io/tarkov/maps/factory"
+    mapgenie: "https://mapgenie.io/tarkov/maps/factory",
+    interactive: "assets/maps/interactive/factory.png"
   },
   {
     name: "Woods",
@@ -927,6 +928,7 @@ function loadMapMarkers(mapName) {
   const markersMap = {
     "Woods": woodsMarkers,
     "Customs": customsMarkers,
+    "Factory": factoryMarkers,
   };
 
   const markers = markersMap[mapName] || [];
@@ -1200,6 +1202,60 @@ const customsMarkers = [
   { type: "quests", icon: "Q", name: "Private Club", info: "Locate and obtain Skier's wallet on Customs", lat: 781, lng: 655 , questId: "675c3582f6ddc329a90f9c6d"},
 ];
 
+/* =========================
+   DONNÉES MARQUEURS — FACTORY
+   lat/lng = coordonnées en pixels sur l'image
+   (à affiner en cliquant sur la map)
+========================= */
+
+const factoryMarkers = [
+  // EXTRACTIONS
+  { type: "extractions", icon: "E", name: "Med Tent Gates", info: "Factory Key Required", lat: 377, lng: 381 },
+  { type: "extractions", icon: "E", name: "Cellars", info: "Factory Key Required", lat: 282, lng: 235 },
+  { type: "extractions", icon: "E", name: "Gate 3", info: "Always open", lat: 545, lng: 117 },
+  { type: "extractions", icon: "E", name: "Gate 0", info: "Always open", lat: 277, lng: 136 },
+  { type: "extractions", icon: "E", name: "Courtyard Gate", info: "Always open", lat: 467, lng: 118 },
+  { type: "extractions", icon: "E", name: "Smuggler's Passage Extraction", info: "Code Required", lat: 223, lng: 326 },
+
+  // SCAV EXTRACTIONS
+  { type: "extractions_scav", icon: "ES", name: "Camera Bunker Door", info: "Always open", lat: 82, lng: 168 },
+  { type: "extractions_scav", icon: "ES", name: "Gate 3", info: "Always open", lat: 540, lng: 117 },
+  { type: "extractions_scav", icon: "ES", name: "Smuggler's Passage Extraction", info: "Code Required", lat: 223, lng: 330 },
+
+  // TRANSIT
+  { type: "transit", icon: "T", name: "Transit To Customs", info: "Open 1 min after game start", lat: 459, lng: 376 },
+  { type: "transit", icon: "T", name: "Transit To Lab", info: "Open 1 min after game start. Lab Carte Required", lat: 54, lng: 352 },
+  { type: "transit", icon: "T", name: "Transit To Woods", info: "Open 1 min after game start", lat: 473, lng: 126 },
+
+  // BOSS
+  { type: "boss", icon: "S", name: "Tagilla", info: "Boss — patrols factory area", lat: 546, lng: 145 },
+  { type: "boss", icon: "S", name: "Tagilla", info: "Boss — patrols factory area", lat: 519, lng: 217 },
+  { type: "boss", icon: "S", name: "Tagilla", info: "Boss — patrols factory area", lat: 405, lng: 137 },
+  { type: "boss", icon: "S", name: "Tagilla", info: "Boss — patrols factory area", lat: 426, lng: 207 },
+  { type: "boss", icon: "S", name: "Tagilla", info: "Boss — patrols factory area", lat: 425, lng: 306 },
+
+  // SPAWN
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 65, lng: 169 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 112, lng: 300 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 161, lng: 258 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 243, lng: 247 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 320, lng: 153 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 306, lng: 133 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 368, lng: 114 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 447, lng: 132 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 494, lng: 178 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 451, lng: 159 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 483, lng: 212 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 543, lng: 206 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 569, lng: 276 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 507, lng: 285 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 572, lng: 285 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 516, lng: 347 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 377, lng: 356 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 397, lng: 332 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 396, lng: 289 },
+  { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 354, lng: 242 },
+];
 /* =========================
    HIDEOUT
 ========================= */
