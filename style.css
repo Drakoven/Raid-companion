@@ -1524,6 +1524,32 @@ button:focus-visible {
   background: var(--surface-3);
 }
 
+.story-chapter-off-path {
+  opacity: 0.45;
+  border-left-color: var(--border) !important;
+}
+
+.story-path-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: var(--success);
+  color: #fff;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.story-skip-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: var(--surface-3);
+  color: var(--muted);
+  border-radius: 20px;
+  font-size: 11px;
+}
+
 .map-marker-extractions { background: #27ae60; }
 .map-marker-boss        { background: #c0392b; }
 .map-marker-quests      { background: #8e44ad; }

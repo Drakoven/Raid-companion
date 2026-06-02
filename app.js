@@ -2893,9 +2893,10 @@ const storylineData = [
     chapter: 1,
     title: "Tour",
     icon: "🗺",
+    requiredFor: ["ending_humanity","ending_darkness","ending_mercenary","ending_survived"],
     description: "Escape Ground Zero and establish contact with Tarkov's traders.",
     steps: [
-      { id: "tour_1", text: "Escape from Ground Zero (tutorial raid)" },
+      { id: "tour_1", text: "Escape from Ground Zero,  (tutorial raid)" },
       { id: "tour_2", text: "Talk to Therapist — pay 250,000₽ to unlock Streets of Tarkov" },
       { id: "tour_3", text: "Talk to Fence — scout Interchange and report back (unlocks Skier)" },
       { id: "tour_4", text: "Talk to Skier — hand over 5 Building Materials FIR (unlocks Factory + Mechanic)" },
@@ -2912,6 +2913,7 @@ const storylineData = [
     chapter: 2,
     title: "Falling Skies",
     icon: "✈️",
+    requiredFor: ["ending_humanity","ending_darkness","ending_mercenary","ending_survived"],
     description: "Investigate the crashed plane and uncover TerraGroup's secrets.",
     steps: [
       { id: "fs_1", text: "Talk to Mechanic — he mentions a fallen plane on Woods" },
@@ -2927,6 +2929,7 @@ const storylineData = [
     chapter: 3,
     title: "They Are Already Here",
     icon: "👥",
+    requiredFor: ["ending_humanity","ending_darkness","ending_mercenary","ending_survived"],
     description: "Uncover the infiltrators operating within Tarkov.",
     steps: [
       { id: "taah_1", text: "Receive intelligence about unknown operatives from Prapor" },
@@ -2941,6 +2944,7 @@ const storylineData = [
     chapter: 4,
     title: "Batya",
     icon: "🪖",
+    requiredFor: ["ending_humanity","ending_darkness"],
     description: "Track down the mysterious figure known as 'Batya'.",
     steps: [
       { id: "batya_1", text: "Receive the tip about Batya from a trader" },
@@ -2955,6 +2959,7 @@ const storylineData = [
     chapter: 5,
     title: "Accidental Witness",
     icon: "👁",
+    requiredFor: ["ending_humanity","ending_mercenary"],
     description: "You witnessed something you shouldn't have — now you're a target.",
     steps: [
       { id: "aw_1", text: "Discover what you witnessed during a raid" },
@@ -2969,6 +2974,7 @@ const storylineData = [
     chapter: 6,
     title: "Blue Fire",
     icon: "🔵",
+    requiredFor: ["ending_humanity","ending_darkness","ending_mercenary"],
     description: "Investigate the mysterious blue fire phenomenon linked to TerraGroup experiments.",
     steps: [
       { id: "bf_1", text: "Receive intel about the Blue Fire phenomenon" },
@@ -2984,6 +2990,7 @@ const storylineData = [
     chapter: 7,
     title: "The Unheard",
     icon: "🔇",
+    requiredFor: ["ending_humanity"],
     description: "Someone is communicating through hidden channels — find out who.",
     steps: [
       { id: "tu_1", text: "Detect the hidden signal via Intelligence Center level 3" },
@@ -2999,6 +3006,7 @@ const storylineData = [
     chapter: 8,
     title: "The Labyrinth",
     icon: "🌀",
+    requiredFor: ["ending_humanity","ending_darkness","ending_mercenary","ending_survived"],
     description: "Navigate the underground TerraGroup network to uncover the final truth.",
     steps: [
       { id: "tl_1", text: "Gain access to the TerraGroup underground facility" },
@@ -3014,6 +3022,7 @@ const storylineData = [
     chapter: 9,
     title: "The Ticket",
     icon: "🎫",
+    requiredFor: ["ending_humanity","ending_darkness","ending_mercenary","ending_survived"],
     description: "Your path out of Tarkov — choose your ending wisely.",
     steps: [
       { id: "tt_1", text: "Receive the extraction offer from your contact" },
@@ -3088,32 +3097,39 @@ function showStoryline(push = true) {
   `;
 
   storylineData.forEach(chapter => {
-    const done = chapter.steps.filter(s => completedStorySteps[s.id]).length;
-    const total = chapter.steps.length;
-    const pct = Math.round((done / total) * 100);
-    const isComplete = done === total;
+  const done = chapter.steps.filter(s => completedStorySteps[s.id]).length;
+  const total = chapter.steps.length;
+  const pct = Math.round((done / total) * 100);
+  const isComplete = done === total;
 
-    const card = document.createElement("div");
-    card.className = `card ${isComplete ? "quest-complete" : ""}`;
-    card.onclick = () => displayChapterDetail(chapter);
+  const isRequired = !chosenEnding || (chapter.requiredFor || []).includes(chosenEnding);
+  const isOnPath = chosenEnding && (chapter.requiredFor || []).includes(chosenEnding);
 
-    card.innerHTML = `
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-        <span style="font-size:22px">${chapter.icon}</span>
-        <div style="flex:1">
-          <h3 style="margin:0">${isComplete ? "✔ " : ""}Chapter ${chapter.chapter} — ${escapeHTML(chapter.title)}</h3>
-          <p style="margin:2px 0 0;color:var(--muted);font-size:13px">${escapeHTML(chapter.description)}</p>
-        </div>
-        <span style="color:var(--accent);font-weight:700">${pct}%</span>
+  const card = document.createElement("div");
+  card.className = `card ${isComplete ? "quest-complete" : ""} ${!isRequired ? "story-chapter-off-path" : ""}`;
+  card.onclick = () => displayChapterDetail(chapter);
+
+  card.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <span style="font-size:22px">${chapter.icon}</span>
+      <div style="flex:1">
+        <h3 style="margin:0">
+          ${isComplete ? "✔ " : ""}Chapter ${chapter.chapter} — ${escapeHTML(chapter.title)}
+          ${isOnPath ? '<span class="story-path-badge">✓ Your path</span>' : ""}
+          ${chosenEnding && !isRequired ? '<span class="story-skip-badge">Not required</span>' : ""}
+        </h3>
+        <p style="margin:2px 0 0;color:var(--muted);font-size:13px">${escapeHTML(chapter.description)}</p>
       </div>
-      <div class="progress-bar mini-progress">
-        <div class="progress-fill" style="width:${pct}%"></div>
-      </div>
-      <p style="margin:4px 0 0;font-size:12px;color:var(--muted)">${done} / ${total} steps</p>
-    `;
+      <span style="color:var(--accent);font-weight:700">${pct}%</span>
+    </div>
+    <div class="progress-bar mini-progress">
+      <div class="progress-fill" style="width:${pct}%"></div>
+    </div>
+    <p style="margin:4px 0 0;font-size:12px;color:var(--muted)">${done} / ${total} steps</p>
+  `;
 
-    content.appendChild(card);
-  });
+  content.appendChild(card);
+});
 }
 
 function displayChapterDetail(chapter) {
@@ -3149,7 +3165,7 @@ function displayChapterDetail(chapter) {
         <h3>Steps</h3>
         ${chapter.steps.map(step => {
           const isDone = !!completedStorySteps[step.id];
-          const isChoice = step.text.startsWith("⚠️");
+          const isChoice = step.text?.startsWith("⚠️");
           return `
             <div
               class="objective objective-checkable ${isDone ? "objective-done" : ""} ${isChoice ? "story-choice-step" : ""}"
@@ -3210,8 +3226,14 @@ function toggleStoryStep(stepId, chapterId) {
 }
 
 function chooseEnding(endingId) {
-  chosenEnding = endingId;
-  localStorage.setItem("chosenEnding", endingId);
+  if (chosenEnding === endingId) {
+    // Deuxième clic = déselectionner
+    chosenEnding = null;
+    localStorage.removeItem("chosenEnding");
+  } else {
+    chosenEnding = endingId;
+    localStorage.setItem("chosenEnding", endingId);
+  }
   displayChapterDetail(storylineData[8]);
 }
 
