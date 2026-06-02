@@ -946,10 +946,18 @@ function loadMapMarkers(mapName, markersKey = null) {
     "ShorelineSanatorium": shorelineSanatoriumMarkers,
   };
 
+  const allMarkersRef = {
+    "shorelineMarkers": shorelineMarkers,
+    "shorelineSanatoriumMarkers": shorelineSanatoriumMarkers,
+    "woodsMarkers": woodsMarkers,
+    "customsMarkers": customsMarkers,
+    "factoryMarkers": factoryMarkers,
+  }
+
   mapLayers = {}; // Réinitialise les layers
 
   const markers = markersKey
-    ? (window[markersKey] || [])
+    ? (allMarkersRef[markersKey] || [])
     : (markersMap[mapName] || []);
 
   markers.forEach(m => {
@@ -1313,8 +1321,80 @@ const factoryMarkers = [
   }
 ];
 
-const shorelineMarkers = [];
+/* =========================
+   DONNÉES MARQUEURS — SHORELINE
+   lat/lng = coordonnées en pixels sur l'image
+   (à affiner en cliquant sur la map)
+========================= */
+
+const shorelineMarkers = [
+// EXTRACTIONS
+{ type: "extractions", icon: "E", name: "Tunel", info: "Always open", lat: 335, lng: 210 },
+{ type: "extractions", icon: "E", name: "Path To Lighthouse", info: "Always open", lat: 805, lng: 194 },
+{ type: "extractions", icon: "E", name: "Climber's Trail", info: "Red Rebel, Paracord and no chest Armor required", lat: 904, lng: 694 },
+{ type: "extractions", icon: "E", name: "Road To North V-EX", info: "The black SUV must be present for extraction. Max 4 Player", lat: 911, lng: 986 },
+{ type: "extractions", icon: "E", name: "Mountain Bunker", info: "Code Required", lat: 917, lng: 850 },
+{ type: "extractions", icon: "E", name: "Pier Boat", info: "Green flare = open", lat: 117, lng: 808 },
+{ type: "extractions", icon: "E", name: "Railway Bridge", info: "Always open", lat: 334, lng: 1384 },
+{ type: "extractions", icon: "E", name: "Road To Customs", info: "Always open", lat: 593, lng: 1238 },
+
+// SCAV EXTRACTIONS
+{ type: "extractions_scav", icon: "ES", name: "Ruined Road", info: "Always open", lat: 316, lng: 225 },
+{ type: "extractions_scav", icon: "ES", name: "Lighthouse", info: "Always open", lat: 121, lng: 909 },
+{ type: "extractions_scav", icon: "ES", name: "Road To Customs", info: "Always open", lat: 585, lng: 1238 },
+{ type: "extractions_scav", icon: "ES", name: "Mountain Bunker", info: "Code Required", lat: 917, lng: 855 },
+
+// EXTRACTION CO-OP
+{ type: "extractions_coop", icon: "EC", name: "Smuggler's Path", info: "Always open", lat: 795, lng: 1103 },
+
+// TRANSIT
+{ type: "transit", icon: "T", name: "Transit To Lighthouse", info: "Always open", lat: 798, lng: 202 },
+{ type: "transit", icon: "T", name: "Transit To Terminal", info: "Always open", lat: 282, lng: 1331 },
+{ type: "transit", icon: "T", name: "Transit To Icebreaker", info: "Always open", lat: 133, lng: 776 },
+
+// BOSS
+{ type: "boss", icon: "S", name: "Sanitar", info: "Boss — patrols resort area", lat: 515, lng: 435 },
+{ type: "boss", icon: "S", name: "Sanitar", info: "Boss — patrols resort area", lat: 665, lng: 688 },
+{ type: "boss", icon: "S", name: "Sanitar", info: "Boss — patrols resort area", lat: 718, lng: 736 },
+{ type: "boss", icon: "S", name: "Sanitar", info: "Boss — patrols resort area", lat: 660, lng: 786 },
+{ type: "boss", icon: "S", name: "Sanitar", info: "Boss — patrols resort area", lat: 178, lng: 787 },
+
+// GOONS
+{ type: "goons", icon: "G", name: "Goons", info: "Patrol the resort area", lat: 378, lng: 939 },
+
+// SPAWN
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 317, lng: 251 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 376, lng: 197 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 433, lng: 147 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 460, lng: 191 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 477, lng: 154 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 510, lng: 155 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 540, lng: 165 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 522, lng: 191 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 500, lng: 250 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 451, lng: 291 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 437, lng: 304 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 488, lng: 331 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 632, lng: 165 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 711, lng: 265 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 818, lng: 238 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 832, lng: 304 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 824, lng: 341 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 833, lng: 526 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 616, lng: 1130 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 558, lng: 1188 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 581, lng: 1264 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 496, lng: 1102 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 449, lng: 1014 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 459, lng: 1300 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 307, lng: 1227 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 209, lng: 1163 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 186, lng: 1099 },
+{ type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 315, lng: 1064 },
+];
+
 const shorelineSanatoriumMarkers = [];
+
 /* =========================
    HIDEOUT
 ========================= */
