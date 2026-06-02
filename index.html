@@ -47,7 +47,39 @@
     <button onclick="showFavorites()">⭐</button>
   </nav>
 
-  <script src="app.js"></script>
+  <!-- Core -->
+  <script src="js/state.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/nav.js"></script>
+
+  <!-- Map markers -->
+  <script src="js/markers/woods.js"></script>
+  <script src="js/markers/customs.js"></script>
+  <script src="js/markers/factory.js"></script>
+  <script src="js/markers/shoreline.js"></script>
+  <script src="js/markers/groundzero.js"></script>
+
+  <!-- Features -->
+  <script src="js/maps.js"></script>
+  <script src="js/quests.js"></script>
+  <script src="js/items.js"></script>
+  <script src="js/hideout.js"></script>
+  <script src="js/traders.js"></script>
+  <script src="js/ammo.js"></script>
+  <script src="js/favorites.js"></script>
+  <script src="js/storyline.js"></script>
+  <script src="js/home.js"></script>
+  <script src="js/search.js"></script>
+
+  <!-- Service Worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("service-worker.js")
+        .then(() => console.log("Service Worker registered"))
+        .catch(error => console.error("SW error :", error));
+    }
+  </script>
 
 </body>
 </html>

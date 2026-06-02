@@ -17,6 +17,7 @@ A mobile-first Progressive Web App (PWA) companion for Escape from Tarkov.
   - Quest markers with live completion status
   - Toggle filters by category
 - 🔫 **Ammo / Ballistics** — All ammo sorted by penetration, caliber filter, side-by-side comparison (up to 3)
+- 📖 **Storyline** — Story chapter tracker with ending selection
 - ⭐ **Favorites** — Save your important quests and items
 - 📱 **Installable PWA** — Works offline once installed, no app store needed
 
@@ -27,6 +28,38 @@ A mobile-first Progressive Web App (PWA) companion for Escape from Tarkov.
 - [Leaflet.js](https://leafletjs.com) — Interactive map rendering
 - Netlify (hosting)
 - PWA (Service Worker, Web Manifest)
+
+## Project Structure
+
+```
+├── index.html
+├── style.css
+├── service-worker.js
+├── manifest.json
+├── assets/
+│   └── maps/
+│       └── interactive/   ← map images for Leaflet
+└── js/
+    ├── state.js           ← global variables & localStorage
+    ├── api.js             ← escapeHTML, cache (TTL 1h), debounce
+    ├── nav.js             ← bottom nav, History API (back button)
+    ├── home.js            ← dashboard
+    ├── quests.js          ← quests, kappa, objectives
+    ├── items.js           ← items, pagination
+    ├── maps.js            ← map list, Leaflet init, marker loading
+    ├── hideout.js         ← hideout stations & item progress
+    ├── traders.js         ← traders, sales, barters
+    ├── ammo.js            ← ammo list, detail, side-by-side comparison
+    ├── favorites.js       ← favorites
+    ├── storyline.js       ← story chapters & ending selection
+    ├── search.js          ← search bar logic
+    └── markers/           ← map marker data (one file per map)
+        ├── woods.js
+        ├── customs.js
+        ├── factory.js
+        ├── shoreline.js
+        └── groundzero.js
+```
 
 ## Maps
 
@@ -48,13 +81,19 @@ Each map includes layered markers with toggle filters:
 - [x] Woods — Extractions, Boss, Goons, PMC Spawns, Transit, Quests
 - [x] Customs — Extractions, Boss, Goons, PMC Spawns, Quests
 - [x] Factory — Extractions, Boss, PMC Spawns, Transit, Quests
+- [x] Shoreline — Extractions, Boss, Goons, PMC Spawns, Transit, Quests (Full map + Sanatorium)
+- [x] Ground Zero — Extractions, Boss, PMC Spawns, Transit, Quests
 - [ ] Interchange *(coming soon)*
-- [ ] Shoreline *(coming soon)*
 - [ ] Reserve *(coming soon)*
 - [ ] Lighthouse *(coming soon)*
 - [ ] Streets *(coming soon)*
 - [ ] Labs *(coming soon)*
-- [ ] Ground Zero *(coming soon)*
+
+## Adding a New Map
+
+1. Create `js/markers/mapname.js` with your markers array
+2. Add `<script src="js/markers/mapname.js"></script>` in `index.html`
+3. Register the map in `js/maps.js` inside `mapsData` and `loadMapMarkers`
 
 ## Live App
 
@@ -68,12 +107,12 @@ Each map includes layered markers with toggle filters:
 
 ## Local Development
 
-No build step required. Just clone and open `index.html` in your browser.
+No build step required. Just clone and open `index.html` in your browser or use the Live Server extension in VS Code.
 
 ```bash
 git clone https://github.com/your-username/raid-companion.git
 cd raid-companion
-# Open index.html in your browser or use a local server
+# Open index.html with Live Server in VS Code
 ```
 
 ## Data Source
