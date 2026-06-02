@@ -92,7 +92,12 @@ const mapsData = [
     boss: "Sanitar",
     use: "Large quest-oriented map with resort area.",
     extracts: ["Tunnel", "Road to Customs", "Pier Boat", "Path to Lighthouse"],
-    mapgenie: "https://mapgenie.io/tarkov/maps/shoreline"
+    mapgenie: "https://mapgenie.io/tarkov/maps/shoreline",
+    interactive: "assets/maps/interactive/shoreline.png",
+    interactiveVariants: [
+      { label: "🗺 Full Map", path: "assets/maps/interactive/shoreline.png", markers: "shorelineMarkers" },
+      { label: "🏥 Sanatorium", path: "assets/maps/interactive/shoreline_sanatorium.png", markers: "shorelineSanatoriumMarkers" }
+    ]
   },
   {
     name: "Lighthouse",
@@ -809,20 +814,28 @@ function openMap(map, push = true) {
     <div class="quest-detail">
       <h2>${escapeHTML(map.name)}</h2>
 
-      ${map.interactive ? `
-        <button class="mapgenie-btn" onclick="openInteractiveMap('${escapeHTML(map.name)}', '${escapeHTML(map.interactive)}')">
-          🗺 Interactive Map
-        </button>
-      ` : map.mapgenie ? `
-        
-        <a href="${escapeHTML(map.mapgenie)}"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="mapgenie-btn"
-        >
-          🗺 View interactive map on Mapgenie
-        </a>
-      ` : ""}
+${map.interactiveVariants ? `
+  <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap">
+    ${map.interactiveVariants.map(v => `
+      <button class="mapgenie-btn" style="flex:1"
+        onclick="openInteractiveMap('${escapeHTML(map.name)}', '${v.path}', '${v.markers}')">
+        ${v.label}
+      </button>
+    `).join("")}
+  </div>
+` : map.interactive ? `
+  <button class="mapgenie-btn" onclick="openInteractiveMap('${escapeHTML(map.name)}', '${escapeHTML(map.interactive)}')">
+    🗺 Interactive Map
+  </button>
+` : map.mapgenie ? `
+  <a href="${escapeHTML(map.mapgenie)}"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="mapgenie-btn"
+  >
+    🗺 View interactive map on Mapgenie
+  </a>
+` : ""}
 
       ${map.image ? `
         <div class="map-image-container" onclick="toggleMapZoom(this)">
@@ -852,7 +865,7 @@ function openMap(map, push = true) {
   `;
 }
 
-function openInteractiveMap(mapName, imagePath) {
+function openInteractiveMap(mapName, imagePath, markerSet = null) {
   currentSection = "map-detail";
   setActiveNav("maps");
   searchInput.style.display = "none";
@@ -880,14 +893,14 @@ function openInteractiveMap(mapName, imagePath) {
   `;
 
   // Initialise Leaflet après que le DOM est prêt
-  setTimeout(() => initLeafletMap(mapName, imagePath), 50);
+  setTimeout(() => initLeafletMap(mapName, imagePath, markerSet), 50);
 }
 
 // Stockage global de la map Leaflet et de ses layers
 let leafletMap = null;
 let mapLayers = {};
 
-function initLeafletMap(mapName, imagePath) {
+function initLeafletMap(mapName, imagePath, markerSet = null) {
   // Nettoie une ancienne instance si elle existe
   if (leafletMap) {
     leafletMap.remove();
@@ -920,19 +933,24 @@ function initLeafletMap(mapName, imagePath) {
     });
 
     // Charge les marqueurs de cette map
-    loadMapMarkers(mapName);
+    loadMapMarkers(mapName, markerSet);
   };
 }
 
-function loadMapMarkers(mapName) {
+function loadMapMarkers(mapName, markersKey = null) {
   const markersMap = {
     "Woods": woodsMarkers,
     "Customs": customsMarkers,
     "Factory": factoryMarkers,
+    "Shoreline": shorelineMarkers,
+    "ShorelineSanatorium": shorelineSanatoriumMarkers,
   };
 
-  const markers = markersMap[mapName] || [];
-  mapLayers = {};
+  mapLayers = {}; // Réinitialise les layers
+
+  const markers = markersKey
+    ? (window[markersKey] || [])
+    : (markersMap[mapName] || []);
 
   markers.forEach(m => {
     if (!mapLayers[m.type]) mapLayers[m.type] = [];
@@ -1294,6 +1312,9 @@ const factoryMarkers = [
   { type: "quests", icon: "Q", name: "Health Care Privacity - Part 6", info: "Locate the dead worker and take their blood sample on Factory. Hand over the blood sample", lat: 371, lng: 376 , questId: "669fa3a3ad7f1eac2607ed48"
   }
 ];
+
+const shorelineMarkers = [];
+const shorelineSanatoriumMarkers = [];
 /* =========================
    HIDEOUT
 ========================= */
