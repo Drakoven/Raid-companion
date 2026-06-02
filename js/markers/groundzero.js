@@ -45,7 +45,7 @@ const groundZeroMarkers = [
   // QUESTS
   { type: "quests", icon: "Q", name: "First in Line", info: "Locate the Emercom station on Ground Zero. Hand over any 3 found in raid médicine items", lat: 861, lng: 247 , questId: "657315ddab5a49b71f098853"},
   { type: "quests", icon: "Q", name: "Shooting Cans", info: "AGS Grenade Launcher", lat: 90, lng: 212 , questId: "657315df034d76585f032e01"},
-  { type: "quests", icon: "Q", name: "Shooting Cans", info: "UTYOS Machine Gun", lat: 860, lng: 250 , questId: "657315df034d76585f032e01"},
+  { type: "quests", icon: "Q", name: "Shooting Cans", info: "UTYOS Machine Gun", lat: 372, lng: 424 , questId: "657315df034d76585f032e01"},
   { type: "quests", icon: "Q", name: "Burning Rubber", info: "Use the paid vehicle extraction on Ground Zero", lat: 493, lng: 560 , questId: "657315e270bb0b8dba00cc48"},
   { type: "quests", icon: "Q", name: "Saving The Mole", info: "Ground floor, by the elevators the debris.", lat: 665, lng: 636 , questId: "657315e4a6af4ab4b50f3459"},
   { type: "quests", icon: "Q", name: "Saving The Mole", info: "Hall entrance to TerraGroup from parking lot", lat: 742, lng: 576 , questId: "657315e4a6af4ab4b50f3459"},
