@@ -45,7 +45,8 @@ const mapsData = [
     boss: "Glukhar",
     use: "Excellent military loot and raiders.",
     extracts: ["D-2", "Hermetic Door", "Cliff Descent", "Armored Train"],
-    mapgenie: "https://mapgenie.io/tarkov/maps/reserve"
+    mapgenie: "https://mapgenie.io/tarkov/maps/reserve",
+    interactive: "assets/maps/interactive/reserve.png"
   },
   {
     name: "Shoreline",
@@ -263,6 +264,7 @@ function loadMapMarkers(mapName, markersKey = null) {
     "Shoreline": shorelineMarkers,
     "ShorelineSanatorium": shorelineSanatoriumMarkers,
     "Ground Zero": groundZeroMarkers,
+    "Reserve": reserveMarkers,
   };
 
   const allMarkersRef = {
@@ -272,6 +274,7 @@ function loadMapMarkers(mapName, markersKey = null) {
     "customsMarkers": customsMarkers,
     "factoryMarkers": factoryMarkers,
     "groundZeroMarkers": groundZeroMarkers,
+    "reserveMarkers": reserveMarkers,
   };
 
   mapLayers = {};
