@@ -36,7 +36,8 @@ const mapsData = [
     boss: "Killa",
     use: "Great technical and electronic loot.",
     extracts: ["Emercom Checkpoint", "Railway Exfil", "Power Station"],
-    mapgenie: "https://mapgenie.io/tarkov/maps/interchange"
+    mapgenie: "https://mapgenie.io/tarkov/maps/interchange",
+    interactive: "assets/maps/interactive/interchange.png"
   },
   {
     name: "Reserve",
@@ -69,7 +70,8 @@ const mapsData = [
     boss: "Zryachiy / Rogues",
     use: "Excellent loot with Rogue presence.",
     extracts: ["Southern Road", "Path to Shoreline", "Mountain Pass"],
-    mapgenie: "https://mapgenie.io/tarkov/maps/lighthouse"
+    mapgenie: "https://mapgenie.io/tarkov/maps/lighthouse",
+    interactive: "assets/maps/interactive/lighthouse.png"
   },
   {
     name: "Labs",
@@ -78,7 +80,8 @@ const mapsData = [
     boss: "Raiders",
     use: "Intense PvP and high-tier loot.",
     extracts: ["Cargo Elevator", "Medical Elevator", "Parking Gate"],
-    mapgenie: "https://mapgenie.io/tarkov/maps/the-lab"
+    mapgenie: "https://mapgenie.io/tarkov/maps/the-lab",
+    interactive: "assets/maps/interactive/labs.png"
   },
   {
     name: "Streets",
@@ -87,7 +90,8 @@ const mapsData = [
     boss: "Kaban / Kollontay",
     use: "Very dense map with enormous loot potential.",
     extracts: ["Collapsed Crane", "Courtyard", "Damaged House", "Klimov Street"],
-    mapgenie: "https://mapgenie.io/tarkov/maps/streets-of-tarkov"
+    mapgenie: "https://mapgenie.io/tarkov/maps/streets-of-tarkov",
+    interactive: "assets/maps/interactive/streets.png"
   },
   {
     name: "Ground Zero",
@@ -265,6 +269,11 @@ function loadMapMarkers(mapName, markersKey = null) {
     "ShorelineSanatorium": shorelineSanatoriumMarkers,
     "Ground Zero": groundZeroMarkers,
     "Reserve": reserveMarkers,
+    "Labs": labsMarkers,
+    "Interchange": interchangeMarkers,
+    "Interchange": interchangeMarkers,
+    "Streets": streetsMarkers,
+    "Lighthouse": lighthouseMarkers,
   };
 
   const allMarkersRef = {
@@ -275,6 +284,10 @@ function loadMapMarkers(mapName, markersKey = null) {
     "factoryMarkers": factoryMarkers,
     "groundZeroMarkers": groundZeroMarkers,
     "reserveMarkers": reserveMarkers,
+    "labsMarkers": labsMarkers,
+    "interchangeMarkers": interchangeMarkers,
+    "streetsMarkers": streetsMarkers,
+    "lighthouseMarkers": lighthouseMarkers,
   };
 
   mapLayers = {};

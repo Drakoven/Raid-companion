@@ -58,7 +58,10 @@ A mobile-first Progressive Web App (PWA) companion for Escape from Tarkov.
         ├── customs.js
         ├── factory.js
         ├── shoreline.js
-        └── groundzero.js
+        ├── groundzero.js
+        ├── reserve.js
+        ├── interchange.js
+        └── labs.js
 ```
 
 ## Maps
@@ -83,11 +86,11 @@ Each map includes layered markers with toggle filters:
 - [x] Factory — Extractions, Boss, PMC Spawns, Transit, Quests
 - [x] Shoreline — Extractions, Boss, Goons, PMC Spawns, Transit, Quests (Full map + Sanatorium)
 - [x] Ground Zero — Extractions, Boss, PMC Spawns, Transit, Quests
-- [ ] Interchange *(coming soon)*
-- [ ] Reserve *(coming soon)*
+- [x] Reserve — Extractions, Boss, PMC Spawns, Transit, Quests
+- [x] Interchange — Extractions, Boss, PMC Spawns, Transit, Quests
+- [x] Labs — Extractions, PMC Spawns, Transit
 - [ ] Lighthouse *(coming soon)*
 - [ ] Streets *(coming soon)*
-- [ ] Labs *(coming soon)*
 
 ## Adding a New Map
 
