@@ -10,7 +10,8 @@ function setActiveNav(section) {
     traders:   5,
     ammo:      6,
     storyline: 7,
-    favorites: 8
+    favorites: 8,
+    bosses:    9
   };
 
   const buttons = document.querySelectorAll(".bottom-nav button");
@@ -40,6 +41,7 @@ window.addEventListener("popstate", event => {
     case "ammo":      displayAmmo(allAmmo, false); break;
     case "favorites": showFavorites(false); break;
     case "storyline": showStoryline(false); break;
+    case "bosses":    showBosses(false); break;
     case "quest-detail":
       const task = allTasks.find(t => t.id === state.id);
       if (task) displayQuestDetails(task, false);
