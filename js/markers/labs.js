@@ -30,5 +30,5 @@ const labsMarkers = [
   { type: "spawn", icon: "SP", name: "PMC Spawn", info: "PMC spawn point", lat: 466, lng: 1638 },
 
 // QUESTS
-  { type: "quest", icon: "Q", name: "TerraGroup Employee", info: "Sanitar Workplace", lat: 334, lng: 861 },
+  { type: "quests", icon: "Q", name: "TerraGroup Employee", info: "Sanitar Workplace", lat: 334, lng: 861 },
 ];
