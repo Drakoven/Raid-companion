@@ -1486,6 +1486,32 @@ button:focus-visible {
   border-color: var(--accent);
 }
 
+.map-quest-search {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+
+.map-quest-search input {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.map-quest-search button {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+}
+
 .map-marker {
   width: 28px;
   height: 28px;

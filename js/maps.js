@@ -220,6 +220,16 @@ function openInteractiveMap(mapName, imagePath, markerSet = null) {
       <button class="map-filter-btn active" data-layer="transit" onclick="toggleMapLayer('transit', this)"> 🟨 Transit Points</button>
     </div>
 
+    <div class="map-quest-search">
+      <input
+        type="text"
+        id="mapQuestSearchInput"
+        placeholder="🔍 Search a quest..."
+        oninput="filterQuestMarkers(this.value)"
+      />
+      <button id="mapQuestSearchClear" style="display:none" onclick="clearQuestFilter()">✕</button>
+    </div>
+
     <div id="leaflet-map" style="width:100%; height:70vh; border-radius:12px; overflow:hidden; margin-top:8px;"></div>
   `;
 
@@ -228,6 +238,7 @@ function openInteractiveMap(mapName, imagePath, markerSet = null) {
 
 let leafletMap = null;
 let mapLayers = {};
+let allQuestMarkersData = []; // stocke les données brutes des quêtes pour le filtre
 
 function initLeafletMap(mapName, imagePath, markerSet = null) {
   if (leafletMap) {
@@ -290,6 +301,7 @@ function loadMapMarkers(mapName, markersKey = null) {
   };
 
   mapLayers = {};
+  allQuestMarkersData = [];
 
   const markers = markersKey
     ? (allMarkersRef[markersKey] || [])
@@ -320,7 +332,41 @@ function loadMapMarkers(mapName, markersKey = null) {
     marker.bindPopup(popupContent);
     marker.addTo(leafletMap);
     mapLayers[m.type].push(marker);
+
+    // Stocke les données quêtes pour le filtre
+    if (m.type === "quests") {
+      allQuestMarkersData.push({ marker, name: m.name.toLowerCase(), questId: m.questId });
+    }
   });
+}
+
+function filterQuestMarkers(value) {
+  const search = value.trim().toLowerCase();
+  const clearBtn = document.getElementById("mapQuestSearchClear");
+  if (clearBtn) clearBtn.style.display = search ? "inline-block" : "none";
+
+  if (!search) {
+    // Réaffiche tous les markers quêtes
+    allQuestMarkersData.forEach(({ marker }) => {
+      if (!leafletMap.hasLayer(marker)) leafletMap.addLayer(marker);
+    });
+    return;
+  }
+
+  // Cache tous les quests, affiche seulement ceux qui matchent
+  allQuestMarkersData.forEach(({ marker, name }) => {
+    if (name.includes(search)) {
+      if (!leafletMap.hasLayer(marker)) leafletMap.addLayer(marker);
+    } else {
+      if (leafletMap.hasLayer(marker)) leafletMap.removeLayer(marker);
+    }
+  });
+}
+
+function clearQuestFilter() {
+  const input = document.getElementById("mapQuestSearchInput");
+  if (input) input.value = "";
+  filterQuestMarkers("");
 }
 
 function toggleMapLayer(type, btn) {
