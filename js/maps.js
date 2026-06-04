@@ -271,7 +271,6 @@ function loadMapMarkers(mapName, markersKey = null) {
     "Reserve": reserveMarkers,
     "Labs": labsMarkers,
     "Interchange": interchangeMarkers,
-    "Interchange": interchangeMarkers,
     "Streets": streetsMarkers,
     "Lighthouse": lighthouseMarkers,
   };

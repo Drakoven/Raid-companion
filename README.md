@@ -61,7 +61,9 @@ A mobile-first Progressive Web App (PWA) companion for Escape from Tarkov.
         ├── groundzero.js
         ├── reserve.js
         ├── interchange.js
-        └── labs.js
+        ├── labs.js
+        ├── lighthouse.js
+        └── streets.js
 ```
 
 ## Maps
@@ -89,8 +91,8 @@ Each map includes layered markers with toggle filters:
 - [x] Reserve — Extractions, Boss, PMC Spawns, Transit, Quests
 - [x] Interchange — Extractions, Boss, PMC Spawns, Transit, Quests
 - [x] Labs — Extractions, PMC Spawns, Transit
-- [ ] Lighthouse *(coming soon)*
-- [ ] Streets *(coming soon)*
+- [x] Lighthouse — Extractions, Boss, Goons, Rogues, PMC Spawns, Transit, Quests
+- [x] Streets — Extractions, Boss, PMC Spawns, Transit, Quests
 
 ## Adding a New Map
 
