@@ -29,6 +29,14 @@ const handleSearch = debounce(() => {
     );
     displayAmmo(filteredAmmo, false);
   }
+
+  if (currentSection === "achievements") {
+    const filteredAchievements = allAchievements.filter(a =>
+      a.name?.toLowerCase().includes(value) ||
+      a.description?.toLowerCase().includes(value)
+    );
+    displayAchievements(filteredAchievements, false);
+  }
 }, 250);
 
 searchInput.addEventListener("input", handleSearch);

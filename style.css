@@ -1579,6 +1579,118 @@ button:focus-visible {
   flex-shrink: 0;
 }
 
+/* =========================
+   ACHIEVEMENTS
+========================= */
+
+.achievement-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.achievement-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.achievement-filter-row label {
+  font-size: 13px;
+  color: var(--muted);
+  min-width: 40px;
+}
+
+.achievement-filter-row select {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.achievement-card-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.achievement-check {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
+.achievement-check--done {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
+
+.achievement-info {
+  flex: 1;
+}
+
+.achievement-info h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+}
+
+.achievement-info p {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.achievement-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.achievement-hidden-badge {
+  font-size: 11px;
+  background: var(--surface-3);
+  color: var(--muted);
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.achievement-side {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.achievement-side--pmc  { background: #1a3a5c; color: #7ec8f7; }
+.achievement-side--scav { background: #3a2a0a; color: #f5c842; }
+
+.achievement-rarity {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.rarity-ultra     { background: #4a0080; color: #e0b0ff; }
+.rarity-very-rare { background: #7a1500; color: #ffb09e; }
+.rarity-rare      { background: #1a4a00; color: #a0e870; }
+.rarity-uncommon  { background: #1a3a5c; color: #7ec8f7; }
+.rarity-common    { background: var(--surface-3); color: var(--muted); }
+
 .map-marker {
   width: 28px;
   height: 28px;

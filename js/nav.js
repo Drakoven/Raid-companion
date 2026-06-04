@@ -11,7 +11,8 @@ function setActiveNav(section) {
     ammo:      6,
     storyline: 7,
     favorites: 8,
-    bosses:    9
+    bosses:       9,
+    achievements: 10
   };
 
   const buttons = document.querySelectorAll(".bottom-nav button");
@@ -41,7 +42,8 @@ window.addEventListener("popstate", event => {
     case "ammo":      displayAmmo(allAmmo, false); break;
     case "favorites": showFavorites(false); break;
     case "storyline": showStoryline(false); break;
-    case "bosses":    showBosses(false); break;
+    case "bosses":        showBosses(false); break;
+    case "achievements":  showAchievements(false); break;
     case "quest-detail":
       const task = allTasks.find(t => t.id === state.id);
       if (task) displayQuestDetails(task, false);
