@@ -11,7 +11,7 @@ async function showAmmo(push = true) {
 
   if (cachedAmmo) {
     allAmmo = cachedAmmo;
-    displayAmmo(allAmmo);
+    displayAmmo(allAmmo, false);
     return;
   }
 
@@ -59,7 +59,7 @@ async function showAmmo(push = true) {
 
     allAmmo = result.data.ammo;
     saveToCache("cachedAmmo", allAmmo);
-    displayAmmo(allAmmo);
+    displayAmmo(allAmmo, false);
 
   } catch (error) {
     console.error(error);

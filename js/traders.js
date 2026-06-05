@@ -6,7 +6,7 @@ async function showTraders(push = true) {
   searchInput.value = "";
 
   if (allTraders.length > 0) {
-    displayTraders(allTraders);
+    displayTraders(allTraders, false);
     return;
   }
 
@@ -38,7 +38,7 @@ async function showTraders(push = true) {
     }
 
     allTraders = result.data.traders;
-    displayTraders(allTraders);
+    displayTraders(allTraders, false);
 
   } catch (error) {
     console.error(error);

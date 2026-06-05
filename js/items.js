@@ -10,7 +10,7 @@ async function showItems(push = true) {
 
   if (cachedItems) {
     allItems = cachedItems;
-    displayItems(allItems);
+    displayItems(allItems, false);
     return;
   }
 
@@ -49,7 +49,7 @@ async function showItems(push = true) {
 
     allItems = result.data.items;
     saveToCache("cachedItems", allItems);
-    displayItems(allItems);
+    displayItems(allItems, false);
 
   } catch (error) {
     console.error(error);

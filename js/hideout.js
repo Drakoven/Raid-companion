@@ -6,7 +6,7 @@ async function showHideout(push = true) {
   searchInput.value = "";
 
   if (allHideoutStations.length > 0) {
-    displayHideoutStations(allHideoutStations);
+    displayHideoutStations(allHideoutStations, false);
     return;
   }
 
@@ -48,7 +48,7 @@ async function showHideout(push = true) {
     }
 
     allHideoutStations = result.data.hideoutStations;
-    displayHideoutStations(allHideoutStations);
+    displayHideoutStations(allHideoutStations, false);
 
   } catch (error) {
     console.error(error);

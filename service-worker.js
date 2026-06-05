@@ -1,22 +1,52 @@
-const CACHE_NAME = "raid-companion-cache-v1";
+const CACHE_NAME = "raid-companion-cache-v2";
 
-// Assets statiques : mis en cache à l'installation
+// Tous les assets mis en cache à l'installation (offline garanti dès le premier chargement)
 const STATIC_ASSETS = [
   "/",
   "/index.html",
   "/style.css",
   "/manifest.json",
+
+  // Assets visuels
   "/assets/background.png",
   "/assets/icon-192.png",
-  "/assets/icon-512.png"
-];
+  "/assets/icon-512.png",
 
-// app.js reçoit un traitement spécial (network-first)
-const NETWORK_FIRST = ["/app.js"];
+  // Core JS
+  "/js/state.js",
+  "/js/api.js",
+  "/js/nav.js",
+  "/js/search.js",
+
+  // Features JS
+  "/js/maps.js",
+  "/js/quests.js",
+  "/js/items.js",
+  "/js/hideout.js",
+  "/js/traders.js",
+  "/js/ammo.js",
+  "/js/favorites.js",
+  "/js/storyline.js",
+  "/js/home.js",
+  "/js/bosses.js",
+  "/js/achievements.js",
+
+  // Markers
+  "/js/markers/woods.js",
+  "/js/markers/customs.js",
+  "/js/markers/factory.js",
+  "/js/markers/shoreline.js",
+  "/js/markers/groundzero.js",
+  "/js/markers/labs.js",
+  "/js/markers/interchange.js",
+  "/js/markers/reserve.js",
+  "/js/markers/streets.js",
+  "/js/markers/lighthouse.js"
+];
 
 /* =========================
    INSTALLATION
-   On pré-cache uniquement les assets statiques
+   Pré-cache tous les assets statiques
 ========================= */
 
 self.addEventListener("install", event => {
@@ -53,17 +83,9 @@ self.addEventListener("activate", event => {
 /* =========================
    FETCH — Stratégies par type de ressource
 
-   - app.js         → Network-first
-     On essaie toujours le réseau pour avoir la dernière version.
-     Si offline, on sert le cache.
-
-   - Assets statiques (CSS, HTML, images)  → Stale-while-revalidate
-     On répond immédiatement depuis le cache (rapide),
-     puis on met à jour le cache en arrière-plan pour la prochaine fois.
-
-   - API tarkov.dev → Network-only
-     Les données temps réel ne doivent pas être cachées ici
-     (géré côté app.js avec localStorage + TTL).
+   - API tarkov.dev  → Network-only (données live, gérées par localStorage + TTL côté app)
+   - Tout le reste   → Stale-while-revalidate
+     Réponse immédiate depuis le cache, mise à jour en arrière-plan
 ========================= */
 
 self.addEventListener("fetch", event => {
@@ -80,42 +102,9 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // app.js — Network-first
-  if (NETWORK_FIRST.some(path => url.pathname === path)) {
-    event.respondWith(networkFirst(request));
-    return;
-  }
-
   // Tout le reste — Stale-while-revalidate
   event.respondWith(staleWhileRevalidate(request));
 });
-
-/* =========================
-   STRATÉGIE : Network-first
-   Tente le réseau, fallback cache si offline
-========================= */
-
-async function networkFirst(request) {
-  const cache = await caches.open(CACHE_NAME);
-
-  try {
-    const networkResponse = await fetch(request);
-
-    // Met à jour le cache avec la version réseau
-    if (networkResponse.ok) {
-      cache.put(request, networkResponse.clone());
-    }
-
-    return networkResponse;
-  } catch {
-    // Offline : on sert le cache
-    const cached = await cache.match(request);
-    return cached || new Response("Offline — resource unavailable.", {
-      status: 503,
-      headers: { "Content-Type": "text/plain" }
-    });
-  }
-}
 
 /* =========================
    STRATÉGIE : Stale-while-revalidate
@@ -139,5 +128,8 @@ async function staleWhileRevalidate(request) {
   if (cached) return cached;
 
   // Pas de cache : on attend le réseau
-  return networkFetch;
+  return networkFetch || new Response("Offline — resource unavailable.", {
+    status: 503,
+    headers: { "Content-Type": "text/plain" }
+  });
 }

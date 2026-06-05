@@ -10,7 +10,7 @@ async function getQuests(push = true) {
 
   if (cachedTasks) {
     allTasks = cachedTasks;
-    displayQuests(allTasks);
+    displayQuests(allTasks, false);
     return;
   }
 
@@ -61,7 +61,7 @@ async function getQuests(push = true) {
 
     allTasks = result.data.tasks;
     saveToCache("cachedTasks", allTasks);
-    displayQuests(allTasks);
+    displayQuests(allTasks, false);
 
   } catch (error) {
     console.error(error);

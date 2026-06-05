@@ -17,7 +17,7 @@ async function showAchievements(push = true) {
   const cached = loadFromCache("cachedAchievements");
   if (cached) {
     allAchievements = cached;
-    displayAchievements(allAchievements);
+    displayAchievements(allAchievements, false);
     return;
   }
 
@@ -51,7 +51,7 @@ async function showAchievements(push = true) {
 
     allAchievements = result.data.achievements;
     saveToCache("cachedAchievements", allAchievements);
-    displayAchievements(allAchievements);
+    displayAchievements(allAchievements, false);
 
   } catch (error) {
     console.error(error);
