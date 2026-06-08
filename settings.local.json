@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(New-Item -ItemType File -Path \"C:\\\\Users\\\\Flori\\\\Desktop\\\\wikitarkov-mobile\\\\js\\\\markers\\\\streets.js\" -Force)",
+      "Bash(curl -s -X POST https://api.tarkov.dev/graphql -H \"Content-Type: application/json\" -d \"{\\\\\"query\\\\\":\\\\\"{items\\(types:[key]\\){id name shortName description avg24hPrice properties{...on ItemPropertiesKey{uses}}}}\\\\\"}\")",
+      "Bash(curl -s -X POST https://api.tarkov.dev/graphql -H \"Content-Type: application/json\" -d '{\"query\":\"{achievements{id}}\"}')",
+      "Bash(python -c \"import sys,json; data=json.load\\(sys.stdin\\); print\\(len\\(data['data']['achievements']\\)\\)\")"
+    ]
+  }
+}

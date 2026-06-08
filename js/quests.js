@@ -302,8 +302,25 @@ function displayQuestDetails(task, push = true) {
           }
         </div>
       </div>
+        </div>
+
+      <div class="detail-box" id="comments-section">
+        <button class="section-toggle" onclick="toggleSection('comments-list')">
+          💬 Commentaires
+        </button>
+        <div id="comments-list">
+          <p style="color:var(--muted); font-size:13px;">Chargement des commentaires...</p>
+        </div>
+
+        <div id="comment-form" style="margin-top:16px;">
+        </div>
+      </div>
+
     </div>
   `;
+
+  // Charger les commentaires et le formulaire
+  loadComments(task.id);
 }
 
 function getUnlockedTasks(taskId) {
