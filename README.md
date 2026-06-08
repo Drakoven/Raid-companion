@@ -1,6 +1,6 @@
 # Raid Companion
 
-A mobile-first Progressive Web App (PWA) companion for Escape from Tarkov — with community features, responsive PC layout, and a backend-powered comment system.
+A mobile-first Progressive Web App (PWA) companion for Escape from Tarkov — with community features, a forum, responsive PC layout, and a backend-powered comment system.
 
 ## Features
 
@@ -20,6 +20,7 @@ A mobile-first Progressive Web App (PWA) companion for Escape from Tarkov — wi
 - 📖 **Storyline** — Story chapter tracker with ending selection
 - ⭐ **Favorites** — Save your important quests and items
 - 💬 **Community Comments** — Leave tips and notes on any quest (account required)
+- 🗣️ **Forum** — 6 categories (Quests, Maps, Gameplay, Hideout, General, Suggestions), topics and replies
 - 👤 **User Accounts** — Register, login, role system (Admin / Moderator / Member)
 - 📱 **Installable PWA** — Works offline once installed, no app store needed
 - 🖥️ **Responsive** — Sidebar layout on PC, bottom nav on mobile
@@ -42,6 +43,7 @@ A mobile-first Progressive Web App (PWA) companion for Escape from Tarkov — wi
 ├── register.php        ← user registration API
 ├── login.php           ← user login API
 ├── comments.php        ← comments API (GET / POST / DELETE)
+├── forum.php           ← forum API (categories, topics, replies)
 ├── config.php          ← DB config (not committed)
 ├── assets/
 │   └── maps/
@@ -52,6 +54,7 @@ A mobile-first Progressive Web App (PWA) companion for Escape from Tarkov — wi
     ├── nav.js             ← bottom nav, History API (back button)
     ├── auth.js            ← login / register / logout / roles
     ├── comments.js        ← quest comments (load, submit, delete)
+    ├── forum.js           ← forum (categories, topics, replies, moderation)
     ├── home.js            ← dashboard
     ├── quests.js          ← quests, kappa, objectives
     ├── items.js           ← items, pagination
@@ -109,6 +112,8 @@ Each map includes layered markers with toggle filters:
 - **Account required to comment** — register to leave tips on quests
 - **Role system** — Admin 👑 / Moderator 🛡️ / Member 👤
 - **Comment moderation** — admins and moderators can delete inappropriate comments
+- **Forum** — 6 categories, create topics, reply, moderation tools
+- **Role badges** — visible on comments and forum posts (👑 Admin / 🛡️ Moderator)
 
 ## Backend Setup (local)
 
@@ -130,6 +135,31 @@ CREATE TABLE users (
 CREATE TABLE comments (
   id INT AUTO_INCREMENT PRIMARY KEY,
   quest_id VARCHAR(100) NOT NULL,
+  user_id INT NOT NULL,
+  contenu TEXT NOT NULL,
+  created_at DATETIME NOT NULL
+);
+
+CREATE TABLE forum_categories (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nom VARCHAR(100) NOT NULL,
+  icone VARCHAR(10) NOT NULL,
+  description VARCHAR(255) NOT NULL,
+  ordre INT DEFAULT 0
+);
+
+CREATE TABLE forum_topics (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  category_id INT NOT NULL,
+  user_id INT NOT NULL,
+  titre VARCHAR(255) NOT NULL,
+  contenu TEXT NOT NULL,
+  created_at DATETIME NOT NULL
+);
+
+CREATE TABLE forum_replies (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  topic_id INT NOT NULL,
   user_id INT NOT NULL,
   contenu TEXT NOT NULL,
   created_at DATETIME NOT NULL
