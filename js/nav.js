@@ -12,7 +12,11 @@ function setActiveNav(section) {
     storyline: 7,
     favorites: 8,
     bosses:       9,
-    achievements: 10
+    achievements: 10,
+    forum:        11,
+    "forum-category": 11,
+    "forum-topic": 11,
+    "forum-create": 11
   };
 
   const buttons = document.querySelectorAll(".bottom-nav button");
@@ -44,6 +48,9 @@ window.addEventListener("popstate", event => {
     case "storyline": showStoryline(false); break;
     case "bosses":        showBosses(false); break;
     case "achievements":  showAchievements(false); break;
+    case "forum":         showForum(false); break;
+    case "forum-category": showForumCategory(state.categoryId, state.categoryName, false); break;
+    case "forum-topic":   showForumTopic(state.topicId, false); break;
     case "quest-detail":
       const task = allTasks.find(t => t.id === state.id);
       if (task) displayQuestDetails(task, false);
